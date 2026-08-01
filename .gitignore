@@ -1,0 +1,26 @@
+# ============================================================
+# Root-level .gitignore for Tigo project
+# ============================================================
+
+# Sensitive credential / notes files — NEVER push these
+details.txt
+secrets.txt
+credentials.txt
+*.secret
+
+# Environment variable files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.sw?
