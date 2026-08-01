@@ -1,4 +1,10 @@
 package com.tigo.repository;
+
 import com.tigo.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
-public interface TagRepository extends JpaRepository<Tag, Integer> {}
+
+import java.util.Optional;
+
+public interface TagRepository extends JpaRepository<Tag, Integer> {
+    Optional<Tag> findByNameIgnoreCase(String name);
+}
