@@ -9,6 +9,7 @@ import PostActionBar from '../components/post/PostActionBar';
 import PostAuthorCard from '../components/post/PostAuthorCard';
 import GridPostCard from '../components/post/GridPostCard';
 import ProgressRail from '../components/post/ProgressRail';
+import { useAuth } from '../context/AuthContext';
 
 // Custom parsers for block types whose default editorjs-html markup doesn't
 // match the design (quote/image need extra wrapper markup); header, paragraph,
@@ -24,6 +25,7 @@ const editorJsParser = edjsHTML({
 
 export default function PostPage() {
     const { slug } = useParams();
+    const { user } = useAuth();
     const [post, setPost] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -177,22 +179,31 @@ export default function PostPage() {
                         Responses <span className="text-text text-lg font-sans font-normal">({MOCK_COMMENTS.length})</span>
                     </h2>
                     
-                    <div className="bg-bg shadow-sm border border-border rounded-xl p-4 mb-8">
-                        <div className="flex items-center gap-3 mb-4">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Current" className="w-8 h-8 rounded-full" />
-                            <span className="font-medium text-text-h text-sm">Current User</span>
+                    {user ? (
+                        <div className="bg-bg shadow-sm border border-border rounded-xl p-4 mb-8">
+                            <div className="flex items-center gap-3 mb-4">
+                                <img src={user.avatarUrl || user.image || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} className="w-8 h-8 rounded-full object-cover" />
+                                <span className="font-medium text-text-h text-sm">{user.displayName || user.name}</span>
+                            </div>
+                            <textarea
+                                placeholder="What are your thoughts?"
+                                className="w-full bg-transparent resize-none outline-none text-text-h placeholder-text text-sm mb-2"
+                                rows="2"
+                            ></textarea>
+                            <div className="flex justify-end">
+                                <button className="px-4 py-1.5 bg-accent text-white rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors">
+                                    Respond
+                                </button>
+                            </div>
                         </div>
-                        <textarea 
-                            placeholder="What are your thoughts?"
-                            className="w-full bg-transparent resize-none outline-none text-text-h placeholder-text text-sm mb-2"
-                            rows="2"
-                        ></textarea>
-                        <div className="flex justify-end">
-                            <button className="px-4 py-1.5 bg-accent text-white rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors">
-                                Respond
-                            </button>
+                    ) : (
+                        <div className="bg-social-bg border border-border rounded-xl p-4 mb-8 flex items-center justify-between gap-4 flex-wrap">
+                            <span className="text-sm text-text">Sign in to leave a response.</span>
+                            <Link to="/login" className="px-4 py-1.5 bg-text-h text-bg rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors">
+                                Sign in
+                            </Link>
                         </div>
-                    </div>
+                    )}
 
                     <div className="flex flex-col gap-6">
                         {MOCK_COMMENTS.map(comment => (

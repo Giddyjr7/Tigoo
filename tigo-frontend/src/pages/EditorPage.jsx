@@ -7,7 +7,6 @@ import UserDropdown from '../components/layout/UserDropdown';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 import toast from 'react-hot-toast';
-import { MOCK_USERS } from '../mocks/mockData';
 
 export default function EditorPage() {
     const navigate = useNavigate();
@@ -53,8 +52,6 @@ export default function EditorPage() {
             toast.success(payload.status === 'PUBLISHED' ? 'Story published!' : 'Draft saved!');
             setIsPublishModalOpen(false);
             navigate(`/post/${res.data.slug}`);
-        } catch (err) {
-            throw err; // Let the modal handle the error display
         } finally {
             setIsSaving(false);
         }

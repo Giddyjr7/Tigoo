@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, ChevronDown } from 'lucide-react';
 import ScrollableRow from '../components/layout/ScrollableRow';
 import PostCard from '../components/post/PostCard';
 import { MOCK_POSTS, MOCK_CATEGORIES } from '../mocks/mockData';

@@ -1,5 +1,4 @@
-import { Bookmark, X, Lock, MoreHorizontal } from 'lucide-react';
-import { MOCK_USERS } from '../../mocks/mockData';
+import { Bookmark, X } from 'lucide-react';
 import ListCard from './ListCard';
 
 export default function YourLists() {

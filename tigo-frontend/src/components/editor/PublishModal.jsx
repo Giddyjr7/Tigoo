@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../../lib/api';
 import { X, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 export default function PublishModal({ isOpen, onClose, postData, isSaving, onSave }) {
     const [categories, setCategories] = useState([]);
@@ -12,13 +11,7 @@ export default function PublishModal({ isOpen, onClose, postData, isSaving, onSa
     const [isLoadingCategories, setIsLoadingCategories] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (isOpen && categories.length === 0) {
-            fetchCategories();
-        }
-    }, [isOpen]);
-
-    const fetchCategories = async () => {
+    const fetchCategories = useCallback(async () => {
         setIsLoadingCategories(true);
         try {
             const res = await api.get('/api/categories');
@@ -29,7 +22,13 @@ export default function PublishModal({ isOpen, onClose, postData, isSaving, onSa
         } finally {
             setIsLoadingCategories(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && categories.length === 0) {
+            fetchCategories();
+        }
+    }, [isOpen, categories.length, fetchCategories]);
 
     const handleSave = async (status) => {
         setError('');
