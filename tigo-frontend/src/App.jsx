@@ -34,6 +34,11 @@ export default function App() {
               <EditorPage />
             </ProtectedRoute>
           } />
+          <Route path="/edit/:id" element={
+            <ProtectedRoute>
+              <EditorPage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

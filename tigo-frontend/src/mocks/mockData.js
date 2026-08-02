@@ -93,3 +93,62 @@ export const MOCK_POSTS = [
 
 export const MOCK_RECOMMENDED_TOPICS = MOCK_CATEGORIES;
 export const MOCK_WHO_TO_FOLLOW = MOCK_USERS;
+
+export const MOCK_FEATURED_POSTS = [
+  {
+    id: 201,
+    title: 'GenRec: Towards LLM-Native Recommendation at Netflix',
+    slug: 'genrec-llm-native-recommendation-netflix',
+    excerpt: 'How Netflix is rethinking its recommendation engine from the ground up using large language models and a new retrieval architecture.',
+    coverImageUrl: 'https://images.unsplash.com/photo-1574375927938-d5a98e8d7e28?w=1200&q=80',
+    readTimeMin: 14,
+    clapCount: 2541,
+    publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    author: { id: 5, displayName: 'Netflix TechBlog', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Netflix', bio: 'Engineering insights from Netflix.', followers: 89400, following: 12 },
+    category: MOCK_CATEGORIES[4],
+    tags: [MOCK_CATEGORIES[4], MOCK_CATEGORIES[1]],
+    content: '{"time":1710000000000,"blocks":[{"id":"paragraph1","type":"paragraph","data":{"text":"At Netflix, recommendations power everything from the home screen to the notifications you receive."}}],"version":"2.29.1"}'
+  },
+  {
+    id: 202,
+    title: 'Should You Self-Host Inference?',
+    slug: 'should-you-self-host-inference',
+    excerpt: 'The honest economics of running your own models, and the hidden costs that most blog posts conveniently forget to mention.',
+    coverImageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80',
+    readTimeMin: 9,
+    clapCount: 891,
+    publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    author: { id: 6, displayName: 'Paolo Perrone', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Paolo', bio: 'ML Infrastructure at Scale.', followers: 4200, following: 88 },
+    category: MOCK_CATEGORIES[1],
+    tags: [MOCK_CATEGORIES[1], MOCK_CATEGORIES[4]],
+    content: '{"time":1710000000000,"blocks":[{"id":"paragraph1","type":"paragraph","data":{"text":"Self-hosting your own inference stack sounds amazing until you get the first GPU bill."}}],"version":"2.29.1"}'
+  },
+  {
+    id: 203,
+    title: 'The Design Principles Behind Linear\'s New UI',
+    slug: 'design-principles-behind-linear-ui',
+    excerpt: 'A breakdown of the subtle craft decisions that make Linear feel faster than any other project management tool.',
+    coverImageUrl: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=1200&q=80',
+    readTimeMin: 6,
+    clapCount: 1780,
+    publishedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    author: { id: 7, displayName: 'Adham Dannaway', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adham', bio: 'UI/UX Designer writing about design craft.', followers: 15600, following: 203 },
+    category: MOCK_CATEGORIES[2],
+    tags: [MOCK_CATEGORIES[2]],
+    content: '{"time":1710000000000,"blocks":[{"id":"paragraph1","type":"paragraph","data":{"text":"Linear feels fast. Not just technically fast — perceptually fast."}}],"version":"2.29.1"}'
+  },
+  {
+    id: 204,
+    title: 'Postgres is Enough: Stop Over-Engineering Your Stack',
+    slug: 'postgres-is-enough',
+    excerpt: 'Redis for caching, Elasticsearch for search, Kafka for queues — or you could just use Postgres for all of it.',
+    coverImageUrl: null,
+    readTimeMin: 11,
+    clapCount: 4320,
+    publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    author: { id: 8, displayName: 'Stephan Schmidt', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Stephan', bio: 'Former CTO. Writing about engineering leadership.', followers: 22100, following: 67 },
+    category: MOCK_CATEGORIES[0],
+    tags: [MOCK_CATEGORIES[0], MOCK_CATEGORIES[1]],
+    content: '{"time":1710000000000,"blocks":[{"id":"paragraph1","type":"paragraph","data":{"text":"Every new database you add to your stack is another thing that can go down at 3 AM."}}],"version":"2.29.1"}'
+  }
+];

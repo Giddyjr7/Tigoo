@@ -2,34 +2,89 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { CheckCircle, Plus, Check, ThumbsUp } from 'lucide-react';
-import editorJsHtml from 'editorjs-html';
 import DOMPurify from 'dompurify';
-import { MOCK_POSTS, MOCK_COMMENTS } from '../mocks/mockData';
+import { MOCK_POSTS } from '../mocks/mockData';
 import PostActionBar from '../components/post/PostActionBar';
 import PostAuthorCard from '../components/post/PostAuthorCard';
 import GridPostCard from '../components/post/GridPostCard';
 import ProgressRail from '../components/post/ProgressRail';
+import { api } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function PostPage() {
     const { slug } = useParams();
+    const { user } = useAuth();
     const [post, setPost] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [moreFromAuthor, setMoreFromAuthor] = useState([]);
+    
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    const [newComment, setNewComment] = useState('');
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
     useEffect(() => {
-        setIsLoading(true);
-        const timer = setTimeout(() => {
-            const foundPost = MOCK_POSTS.find(p => p.slug === slug);
-            if (foundPost) {
-                setPost(foundPost);
+        const fetchPost = async () => {
+            setIsLoading(true);
+            try {
+                const res = await api.get(`/api/posts/${slug}`);
+                setPost(res.data);
                 setError(null);
-            } else {
+            } catch (err) {
+                console.error(err);
                 setError("Post not found. It may have been deleted or never existed.");
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
-        }, 100);
-        return () => clearTimeout(timer);
+        };
+        fetchPost();
     }, [slug]);
+
+    useEffect(() => {
+        if (!post) return;
+        
+        const fetchRelatedData = async () => {
+            try {
+                const [commentsRes, authorPostsRes] = await Promise.all([
+                    api.get(`/api/posts/${post.id}/comments`),
+                    api.get(`/api/posts/user/${post.author.id}?page=0&size=5`)
+                ]);
+                
+                setComments(commentsRes.data);
+                
+                // Filter out current post and limit to 2
+                const filteredAuthorPosts = authorPostsRes.data.content
+                    .filter(p => p.id !== post.id)
+                    .slice(0, 2);
+                setMoreFromAuthor(filteredAuthorPosts);
+                
+            } catch (err) {
+                console.error("Failed to fetch related data", err);
+            }
+        };
+        
+        fetchRelatedData();
+    }, [post]);
+
+    const handleCommentSubmit = async () => {
+        if (!newComment.trim() || !user) return;
+        
+        setIsSubmittingComment(true);
+        try {
+            await api.post(`/api/posts/${post.id}/comments`, { content: newComment });
+            setNewComment('');
+            const commentsRes = await api.get(`/api/posts/${post.id}/comments`);
+            setComments(commentsRes.data);
+            toast.success("Comment added");
+        } catch (err) {
+            console.error("Failed to add comment", err);
+            toast.error("Failed to add comment");
+        } finally {
+            setIsSubmittingComment(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -51,7 +106,6 @@ export default function PostPage() {
         );
     }
 
-    const moreFromAuthor = MOCK_POSTS.filter(p => p.author.id === post.author.id && p.id !== post.id).slice(0, 2);
     const recommended = MOCK_POSTS.filter(p => p.id !== post.id).slice(0, 4);
 
     return (
@@ -102,7 +156,7 @@ export default function PostPage() {
                         </div>
                     </div>
 
-                    <PostActionBar post={post} />
+                    <PostActionBar post={post} commentCount={comments.length} />
 
                     {post.coverImageUrl && (
                         <figure className="mb-12 w-full flex flex-col items-center">
@@ -111,9 +165,6 @@ export default function PostPage() {
                                 alt={post.title}
                                 className="w-full object-cover max-h-[600px] bg-social-bg"
                             />
-                            <figcaption className="text-text text-sm italic mt-3">
-                                Photo by Unsplash via MockData
-                            </figcaption>
                         </figure>
                     )}
 
@@ -168,51 +219,70 @@ export default function PostPage() {
                         })()}
                     </div>
 
-                    <div className="max-w-[680px] mx-auto mt-12 mb-8">
-                        <p className="italic text-text text-sm">
-                            Disclaimer: This is a mocked article page designed to demonstrate the TIGO structural layout. The content above is generated for display purposes only.
-                        </p>
-                    </div>
-
-                    <PostActionBar post={post} />
+                    <PostActionBar post={post} commentCount={comments.length} />
                     <PostAuthorCard author={post.author} />
                 </article>
 
                 <section className="max-w-[800px] mx-auto mt-12 mb-16 border-b border-border pb-12">
                     <h2 className="text-2xl font-bold text-text-h font-serif mb-8 flex items-center gap-2">
-                        Responses <span className="text-text text-lg font-sans font-normal">({MOCK_COMMENTS.length})</span>
+                        Responses <span className="text-text text-lg font-sans font-normal">({comments.length})</span>
                     </h2>
                     
-                    <div className="bg-bg shadow-sm border border-border rounded-xl p-4 mb-8">
-                        <div className="flex items-center gap-3 mb-4">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Current" className="w-8 h-8 rounded-full" />
-                            <span className="font-medium text-text-h text-sm">Current User</span>
+                    {user ? (
+                        <div className="bg-bg shadow-sm border border-border rounded-xl p-4 mb-8">
+                            <div className="flex items-center gap-3 mb-4">
+                                <img src={user.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} className="w-8 h-8 rounded-full" />
+                                <span className="font-medium text-text-h text-sm">{user.displayName}</span>
+                            </div>
+                            <textarea 
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder="What are your thoughts?"
+                                className="w-full bg-transparent resize-none outline-none text-text-h placeholder-text text-sm mb-2"
+                                rows="2"
+                                disabled={isSubmittingComment}
+                            ></textarea>
+                            <div className="flex justify-end">
+                                <button 
+                                    onClick={handleCommentSubmit}
+                                    disabled={isSubmittingComment || !newComment.trim()}
+                                    className="px-4 py-1.5 bg-accent text-white rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors disabled:opacity-50"
+                                >
+                                    {isSubmittingComment ? 'Posting...' : 'Respond'}
+                                </button>
+                            </div>
                         </div>
-                        <textarea 
-                            placeholder="What are your thoughts?"
-                            className="w-full bg-transparent resize-none outline-none text-text-h placeholder-text text-sm mb-2"
-                            rows="2"
-                        ></textarea>
-                        <div className="flex justify-end">
-                            <button className="px-4 py-1.5 bg-accent text-white rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors">
-                                Respond
-                            </button>
+                    ) : (
+                        <div className="bg-bg shadow-sm border border-border rounded-xl p-6 mb-8 text-center">
+                            <p className="text-text mb-4">Sign in to leave a response.</p>
+                            <Link to="/login" className="px-6 py-2 bg-text-h text-bg rounded-full text-sm font-medium hover:bg-opacity-80 transition-colors inline-block">
+                                Sign In
+                            </Link>
                         </div>
-                    </div>
+                    )}
 
                     <div className="flex flex-col gap-6">
-                        {MOCK_COMMENTS.map(comment => (
+                        {comments.length === 0 && (
+                            <div className="text-text py-4">No responses yet. Be the first to share your thoughts!</div>
+                        )}
+                        {comments.map(comment => (
                             <div key={comment.id} className="py-4 border-b border-border last:border-0">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <img src={comment.author.avatarUrl} className="w-8 h-8 rounded-full" />
+                                    <Link to={`/profile/${comment.author?.id}`}>
+                                        <img src={comment.author?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} className="w-8 h-8 rounded-full bg-border" />
+                                    </Link>
                                     <div>
-                                        <div className="text-sm font-medium text-text-h">{comment.author.displayName}</div>
+                                        <Link to={`/profile/${comment.author?.id}`} className="text-sm font-medium text-text-h hover:underline">
+                                            {comment.author?.displayName}
+                                        </Link>
                                         <div className="text-xs text-text">{format(new Date(comment.createdAt), 'MMM d, yyyy')}</div>
                                     </div>
                                 </div>
-                                <p className="text-text-h text-sm leading-relaxed mb-4">{comment.content}</p>
+                                <p className="text-text-h text-sm leading-relaxed mb-4 whitespace-pre-wrap">{comment.content}</p>
                                 <div className="flex items-center gap-4 text-text text-sm">
-                                    <button className="flex items-center gap-1 hover:text-text-h"><ThumbsUp size={16} /> {comment.clapCount}</button>
+                                    <button className="flex items-center gap-1 hover:text-text-h">
+                                        <ThumbsUp size={16} /> 0
+                                    </button>
                                 </div>
                             </div>
                         ))}

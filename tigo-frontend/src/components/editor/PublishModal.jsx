@@ -3,12 +3,12 @@ import { api } from '../../lib/api';
 import { X, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function PublishModal({ isOpen, onClose, postData, isSaving, onSave }) {
+export default function PublishModal({ isOpen, onClose, postData, isSaving, onSave, existingPost }) {
     const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [tagsInput, setTagsInput] = useState('');
-    const [coverImage, setCoverImage] = useState('');
-    const [excerpt, setExcerpt] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState(existingPost?.category?.id || '');
+    const [tagsInput, setTagsInput] = useState(existingPost?.tags?.map(t => typeof t === 'object' ? t.name : t).join(', ') || '');
+    const [coverImage, setCoverImage] = useState(existingPost?.coverImageUrl || '');
+    const [excerpt, setExcerpt] = useState(existingPost?.excerpt || '');
     const [isLoadingCategories, setIsLoadingCategories] = useState(false);
     const [error, setError] = useState('');
 
@@ -17,6 +17,15 @@ export default function PublishModal({ isOpen, onClose, postData, isSaving, onSa
             fetchCategories();
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (existingPost && isOpen) {
+            setSelectedCategory(existingPost.category?.id || '');
+            setTagsInput(existingPost.tags?.map(t => typeof t === 'object' ? t.name : t).join(', ') || '');
+            setCoverImage(existingPost.coverImageUrl || '');
+            setExcerpt(existingPost.excerpt || '');
+        }
+    }, [existingPost, isOpen]);
 
     const fetchCategories = async () => {
         setIsLoadingCategories(true);
