@@ -58,7 +58,7 @@ export default function PostPage() {
         <div className="flex w-full relative">
             <ProgressRail />
             
-            <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-16 xl:px-24 py-8">
+            <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-10 xl:px-14 py-8">
                 <article className="w-full">
                     <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 mb-6 max-w-[800px] mx-auto pb-1 w-full">
                         {post.tags?.map((tag, idx) => {

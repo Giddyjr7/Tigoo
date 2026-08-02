@@ -20,7 +20,7 @@ export default function RefineRecommendationsPage() {
 
     return (
         <div className="flex w-full">
-            <div className="flex-1 min-w-0 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 py-8 md:py-12">
+            <div className="flex-1 min-w-0 px-6 sm:px-8 md:px-12 lg:px-10 xl:px-14 py-8 md:py-12">
                 <div className="w-full max-w-[700px] mx-auto xl:mx-0">
                     
                     <div className="mb-8 md:mb-12">

@@ -26,9 +26,9 @@ export default function App() {
             <Route path="/me/following/*" element={<RefineRecommendationsPage />} />
             <Route path="/tag/:slug" element={<TagPage />} />
             <Route path="/post/:slug" element={<PostPage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/profile/:userId/*" element={<ProfilePage />} />
           </Route>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/write" element={
             <ProtectedRoute>
               <EditorPage />

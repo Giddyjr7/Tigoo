@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
     return (
         <div className="flex w-full">
-            <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-16 xl:px-24 py-12 flex justify-center">
+            <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-10 xl:px-14 py-12 flex justify-center">
                 <div className="w-full max-w-[700px]">
                     <div className="flex items-center justify-between mb-8">
                         <h1 className="!m-0 text-3xl md:text-[42px] font-bold text-text-h tracking-tight">Menegideon</h1>

@@ -5,8 +5,8 @@ import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal, ThumbsDown } from 'l
 export default function PostCard({ post }) {
     return (
         <article className="border-b border-border py-12 first:pt-0 last:border-0 flex flex-col-reverse md:flex-row gap-8 group justify-between items-start">
-            <div className="flex-1 flex flex-col justify-center min-w-0 w-full">
-                <div className="flex items-center gap-2 mb-2">
+            <div className="flex-1 flex flex-col justify-center min-w-0 w-full pr-4">
+                <div className="flex items-center gap-2 mb-3">
                     <Link to={`/profile/${post.author?.id}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                         <img 
                             src={post.author?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} 
@@ -26,11 +26,11 @@ export default function PostCard({ post }) {
                 </div>
 
                 <Link to={`/post/${post.slug}`} className="block mb-4">
-                    <h2 className="text-[22px] font-extrabold font-sans text-text-h mb-1 group-hover:text-text-h transition-colors tracking-tight leading-[1.2] line-clamp-2">
+                    <h2 className="text-[24px] font-bold font-serif text-text-h mb-2 group-hover:text-text-h transition-colors tracking-tight leading-tight line-clamp-2">
                         {post.title}
                     </h2>
                     {post.excerpt && (
-                        <p className="text-[#6B6B6B] text-[14px] font-sans leading-[1.4] line-clamp-2 hidden sm:block mt-1.5">
+                        <p className="text-[#6B6B6B] text-[16px] font-sans leading-snug line-clamp-2 hidden sm:block mt-2">
                             {post.excerpt}
                         </p>
                     )}
@@ -68,7 +68,7 @@ export default function PostCard({ post }) {
             
             {post.coverImageUrl && (
                 <div className="flex-shrink-0 md:pt-2 w-full md:w-auto">
-                    <Link to={`/post/${post.slug}`} className="block w-full h-[200px] md:w-[152px] md:h-[152px] overflow-hidden rounded-md bg-social-bg">
+                    <Link to={`/post/${post.slug}`} className="block w-full h-[200px] md:w-[200px] md:h-[134px] overflow-hidden rounded-md bg-social-bg">
                         <img 
                             src={post.coverImageUrl} 
                             alt={post.title}

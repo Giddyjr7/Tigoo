@@ -26,7 +26,7 @@ export default function TagPage() {
 
     return (
         <div className="flex justify-center w-full min-h-screen">
-            <div className="w-full max-w-[728px] px-6 py-12">
+            <div className="w-full max-w-[820px] px-6 py-12">
                 <div className="mb-10">
                     <h1 className="text-[42px] font-bold font-sans text-[#242424] tracking-tight mb-8">Following</h1>
                     

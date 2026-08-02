@@ -13,7 +13,6 @@ export default function EditorPage() {
     const navigate = useNavigate();
     const editorRef = useRef(null);
     const { user } = useAuth();
-    const displayUser = user || MOCK_USERS[0];
     const [title, setTitle] = useState('');
     const [content, setContent] = useState({});
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -87,7 +86,7 @@ export default function EditorPage() {
                     <button className="text-text hover:text-text-h transition-colors">
                         <Bell size={24} strokeWidth={1.5} />
                     </button>
-                    <UserDropdown user={displayUser} />
+                    <UserDropdown user={user} />
                 </div>
             </nav>
 

@@ -6,7 +6,6 @@ import UserDropdown from './UserDropdown';
 
 export default function Navbar({ sidebarOpen, toggleSidebar }) {
     const { user, signOut } = useAuth();
-    const displayUser = user || MOCK_USERS[0];
     
     return (
         <nav className="flex justify-between items-center py-2 px-6 border-b border-[#F2F2F2] bg-white sticky top-0 z-50 h-[57px]">
@@ -36,18 +35,14 @@ export default function Navbar({ sidebarOpen, toggleSidebar }) {
                     <PenSquare size={24} strokeWidth={1.5} />
                     <span className="hidden sm:inline">Write</span>
                 </Link>
-                {displayUser ? (
-                    <div className="flex items-center gap-5">
+                <div className="flex items-center gap-5">
+                    {user && (
                         <button className="text-text hover:text-text-h transition-colors hidden sm:block">
                             <Bell size={24} strokeWidth={1.5} />
                         </button>
-                        <UserDropdown user={displayUser} />
-                    </div>
-                ) : (
-                    <Link to="/login" className="px-4 py-2 bg-text-h text-bg rounded-full font-medium hover:bg-opacity-90 transition-all text-sm">
-                        Sign In
-                    </Link>
-                )}
+                    )}
+                    <UserDropdown user={user} />
+                </div>
             </div>
         </nav>
     );

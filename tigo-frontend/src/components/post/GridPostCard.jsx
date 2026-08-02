@@ -31,7 +31,7 @@ export default function GridPostCard({ post }) {
                 </div>
                 
                 <Link to={`/post/${post.slug}`}>
-                    <h3 className="text-xl font-bold text-text-h leading-tight mb-2 font-serif group-hover:underline decoration-1 underline-offset-2 line-clamp-3">
+                    <h3 className="text-[22px] font-bold text-text-h leading-tight mb-2 font-serif group-hover:underline decoration-1 underline-offset-2 line-clamp-3">
                         {post.title}
                     </h3>
                 </Link>
