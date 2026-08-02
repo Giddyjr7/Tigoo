@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, PenSquare, Search, Bell, Menu } from 'lucide-react';
+import { PenSquare, Search, Bell, Menu } from 'lucide-react';
 import { MOCK_USERS } from '../../mocks/mockData';
+import UserDropdown from './UserDropdown';
 
 export default function Navbar({ sidebarOpen, toggleSidebar }) {
     const { user, signOut } = useAuth();
@@ -37,17 +38,10 @@ export default function Navbar({ sidebarOpen, toggleSidebar }) {
                 </Link>
                 {displayUser ? (
                     <div className="flex items-center gap-5">
-                        <button className="text-text hover:text-text-h transition-colors">
+                        <button className="text-text hover:text-text-h transition-colors hidden sm:block">
                             <Bell size={24} strokeWidth={1.5} />
                         </button>
-                        <Link to={`/profile/${displayUser.id}`}>
-                            <img src={displayUser.avatarUrl || displayUser.image} alt="avatar" className="w-8 h-8 rounded-full bg-border object-cover" />
-                        </Link>
-                        {user && (
-                            <button onClick={signOut} className="text-text hover:text-accent transition-colors flex items-center" title="Sign Out">
-                                <LogOut size={20} />
-                            </button>
-                        )}
+                        <UserDropdown user={displayUser} />
                     </div>
                 ) : (
                     <Link to="/login" className="px-4 py-2 bg-text-h text-bg rounded-full font-medium hover:bg-opacity-90 transition-all text-sm">

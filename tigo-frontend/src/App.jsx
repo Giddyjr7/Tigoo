@@ -11,6 +11,7 @@ import StatsPage from './pages/StatsPage';
 import TagPage from './pages/TagPage';
 import EditorPage from './pages/EditorPage';
 import LibraryPage from './pages/LibraryPage';
+import RefineRecommendationsPage from './pages/RefineRecommendationsPage';
 
 export default function App() {
   return (
@@ -22,16 +23,17 @@ export default function App() {
             <Route path="/library/*" element={<LibraryPage />} />
             <Route path="/stories/*" element={<StoriesPage />} />
             <Route path="/stats/*" element={<StatsPage />} />
+            <Route path="/me/following/*" element={<RefineRecommendationsPage />} />
             <Route path="/tag/:slug" element={<TagPage />} />
             <Route path="/post/:slug" element={<PostPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile/:userId/*" element={<ProfilePage />} />
-            <Route path="/write" element={
-              <ProtectedRoute>
-                <EditorPage />
-              </ProtectedRoute>
-            } />
           </Route>
+          <Route path="/write" element={
+            <ProtectedRoute>
+              <EditorPage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

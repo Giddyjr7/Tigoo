@@ -1,13 +1,19 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { Bell, MoreHorizontal } from 'lucide-react';
 import RichTextEditor from '../components/editor/RichTextEditor';
 import PublishModal from '../components/editor/PublishModal';
+import UserDropdown from '../components/layout/UserDropdown';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 import toast from 'react-hot-toast';
+import { MOCK_USERS } from '../mocks/mockData';
 
 export default function EditorPage() {
     const navigate = useNavigate();
     const editorRef = useRef(null);
+    const { user } = useAuth();
+    const displayUser = user || MOCK_USERS[0];
     const [title, setTitle] = useState('');
     const [content, setContent] = useState({});
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -56,38 +62,55 @@ export default function EditorPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto w-full pt-10 pb-32">
-            <div className="flex justify-between items-center mb-10 border-b border-border pb-4">
-                <h1 className="text-sm font-medium text-text-muted tracking-wider uppercase">Draft</h1>
+        <div className="min-h-screen w-full flex flex-col bg-white">
+            <nav className="flex justify-between items-center py-2 px-6 h-[65px]">
                 <div className="flex items-center gap-4">
-                    <span className="text-sm text-text-muted">
-                        {content.blocks?.length > 0 ? 'Changes saved locally' : 'Autosaving...'}
+                    <Link to="/" className="text-[32px] font-bold font-serif text-[#242424] tracking-tighter mr-2">
+                        TIGO
+                    </Link>
+                    <span className="text-[13px] text-[#242424]">Draft</span>
+                    <span className="text-[13px] text-[#6B6B6B]">
+                        {content.blocks?.length > 0 ? 'Saved' : ''}
                     </span>
+                </div>
+                
+                <div className="flex items-center gap-5">
                     <button 
                         onClick={handlePublishClick}
-                        className="bg-accent text-white px-5 py-2 rounded-full font-medium hover:bg-accent-hover transition-colors"
+                        className="bg-[#1A8917] text-white px-4 py-1.5 rounded-full text-[13px] font-medium hover:bg-[#156d12] transition-colors"
                     >
                         Publish
                     </button>
+                    <button className="text-text hover:text-text-h transition-colors">
+                        <MoreHorizontal size={24} strokeWidth={1.5} />
+                    </button>
+                    <button className="text-text hover:text-text-h transition-colors">
+                        <Bell size={24} strokeWidth={1.5} />
+                    </button>
+                    <UserDropdown user={displayUser} />
                 </div>
-            </div>
+            </nav>
 
-            <div className="mb-8">
-                <input 
-                    type="text" 
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Title"
-                    className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-h placeholder:text-text-muted/40"
-                    autoFocus
-                />
-            </div>
+            <main className="flex-1 w-full max-w-[800px] mx-auto px-6 pt-12 pb-32">
+                <div className="mb-4">
+                    <input 
+                        type="text" 
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Title"
+                        className="w-full text-[42px] font-bold font-serif bg-transparent border-none outline-none text-[#242424] placeholder:text-[#b3b3b1] leading-tight"
+                        autoFocus
+                    />
+                </div>
 
-            <RichTextEditor 
-                initialData={content} 
-                onChange={handleEditorChange} 
-                editorRef={editorRef}
-            />
+                <div className="w-full">
+                    <RichTextEditor 
+                        initialData={content} 
+                        onChange={handleEditorChange} 
+                        editorRef={editorRef}
+                    />
+                </div>
+            </main>
 
             <PublishModal 
                 isOpen={isPublishModalOpen}

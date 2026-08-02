@@ -51,9 +51,9 @@ export default function Sidebar({ isOpen = true, toggleSidebar }) {
             <div className="mb-10">
                 <div className="flex items-center justify-between text-text-h font-medium mb-4 px-3">
                     <h3>Following</h3>
-                    <button className="text-text hover:text-text-h">
+                    <Link to="/me/following" className="text-text hover:text-text-h">
                         <Settings size={18} strokeWidth={1.5} />
-                    </button>
+                    </Link>
                 </div>
                 <div className="flex flex-col gap-1">
                     <span className="text-sm text-text px-3 italic mb-1">Topics</span>

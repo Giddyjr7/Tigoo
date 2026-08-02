@@ -4,7 +4,13 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 export default function Layout() {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        if (typeof window !== 'undefined') {
+            // 768px is Tailwind's md breakpoint
+            return window.innerWidth >= 768;
+        }
+        return true;
+    });
 
     const toggleSidebar = () => {
         setSidebarOpen(prev => !prev);
