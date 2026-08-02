@@ -1,13 +1,17 @@
 package com.tigo;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.security.Security;
 
 @SpringBootApplication
 public class TigoBackendApplication {
 
 	public static void main(String[] args) {
+		Security.addProvider(new BouncyCastleProvider());
 		try {
 			Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 			dotenv.entries().forEach(entry -> {

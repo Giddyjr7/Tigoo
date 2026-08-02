@@ -1,9 +1,7 @@
 package com.tigo.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
@@ -14,16 +12,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Key;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -42,15 +38,85 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         try {
-            JWKSource<SecurityContext> jwkSource = new RemoteJWKSet<>(new URL(jwkSetUri));
-            DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-            jwtProcessor.setJWSKeySelector(new JWSVerificationKeySelector<>(JWSAlgorithm.EdDSA, jwkSource));
-            // Disable Nimbus-level claims verification; Spring Security validators handle exp/iss checks.
-            // Neon Auth's JWT sets aud = issuer URL (not our server), so we skip audience validation here.
-            jwtProcessor.setJWTClaimsSetVerifier((claims, ctx) -> { /* no-op */ });
-            return new NimbusJwtDecoder(jwtProcessor);
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException("Invalid JWK Set URI: " + jwkSetUri, e);
+            // Use DefaultResourceRetriever with extended timeouts — the Neon JWKS endpoint
+            // can take several seconds to respond. Default Nimbus timeout is 3s which is too short.
+            com.nimbusds.jose.util.DefaultResourceRetriever resourceRetriever =
+                new com.nimbusds.jose.util.DefaultResourceRetriever(
+                    15_000, // connect timeout ms
+                    15_000  // read timeout ms
+                );
+            JWKSource<SecurityContext> jwkSource = new RemoteJWKSet<>(new URL(jwkSetUri), resourceRetriever);
+            
+            // Neon Auth JWKS uses EdDSA (OKP/Ed25519) keys.
+            // Nimbus's built-in selectors (JWSVerificationKeySelector) attempt to convert OKP to java.security.PublicKey,
+            // which throws "Export to java.security.PublicKey not supported" and fails the verification.
+            // By implementing a completely custom JWTProcessor, we bypass KeyConverter entirely
+            // and feed the OctetKeyPair directly into Nimbus's native Ed25519Verifier.
+            com.nimbusds.jwt.proc.JWTProcessor<SecurityContext> customProcessor = new com.nimbusds.jwt.proc.JWTProcessor<>() {
+                @Override
+                public com.nimbusds.jwt.JWTClaimsSet process(String jwtString, SecurityContext context) 
+                        throws java.text.ParseException, com.nimbusds.jose.proc.BadJOSEException, com.nimbusds.jose.JOSEException {
+                    return process(com.nimbusds.jwt.JWTParser.parse(jwtString), context);
+                }
+
+                @Override
+                public com.nimbusds.jwt.JWTClaimsSet process(com.nimbusds.jwt.JWT jwt, SecurityContext context) 
+                        throws com.nimbusds.jose.proc.BadJOSEException, com.nimbusds.jose.JOSEException {
+                    
+                    if (!(jwt instanceof com.nimbusds.jwt.SignedJWT signedJwt)) {
+                        throw new com.nimbusds.jose.proc.BadJOSEException("JWT is not signed");
+                    }
+                    
+                    String kid = signedJwt.getHeader().getKeyID();
+                    com.nimbusds.jose.jwk.JWKSelector selector = new com.nimbusds.jose.jwk.JWKSelector(
+                        new com.nimbusds.jose.jwk.JWKMatcher.Builder().keyID(kid).build()
+                    );
+                    
+                    List<com.nimbusds.jose.jwk.JWK> jwks = jwkSource.get(selector, context);
+                    if (jwks.isEmpty()) {
+                        throw new com.nimbusds.jose.proc.BadJOSEException("No key found in JWKS for kid: " + kid);
+                    }
+                    
+                    com.nimbusds.jose.jwk.JWK jwk = jwks.get(0);
+                    if (!(jwk instanceof com.nimbusds.jose.jwk.OctetKeyPair okp)) {
+                        throw new com.nimbusds.jose.proc.BadJOSEException("Expected Ed25519 OctetKeyPair, got: " + jwk.getClass());
+                    }
+                    
+                    // Natively verify Ed25519 using Nimbus's Ed25519Verifier
+                    com.nimbusds.jose.JWSVerifier verifier = new com.nimbusds.jose.crypto.Ed25519Verifier(okp);
+                    if (!signedJwt.verify(verifier)) {
+                        throw new com.nimbusds.jose.proc.BadJOSEException("Ed25519 signature verification failed");
+                    }
+                    
+                    try {
+                        return signedJwt.getJWTClaimsSet();
+                    } catch (java.text.ParseException e) {
+                        throw new com.nimbusds.jose.proc.BadJOSEException("Invalid claims set", e);
+                    }
+                }
+
+                @Override
+                public com.nimbusds.jwt.JWTClaimsSet process(com.nimbusds.jwt.SignedJWT signedJWT, SecurityContext context) 
+                        throws com.nimbusds.jose.proc.BadJOSEException, com.nimbusds.jose.JOSEException {
+                    return process((com.nimbusds.jwt.JWT) signedJWT, context);
+                }
+
+                @Override
+                public com.nimbusds.jwt.JWTClaimsSet process(com.nimbusds.jwt.PlainJWT plainJWT, SecurityContext context) 
+                        throws com.nimbusds.jose.proc.BadJOSEException, com.nimbusds.jose.JOSEException {
+                    throw new com.nimbusds.jose.proc.BadJOSEException("Plain JWTs are rejected");
+                }
+
+                @Override
+                public com.nimbusds.jwt.JWTClaimsSet process(com.nimbusds.jwt.EncryptedJWT encryptedJWT, SecurityContext context) 
+                        throws com.nimbusds.jose.proc.BadJOSEException, com.nimbusds.jose.JOSEException {
+                    throw new com.nimbusds.jose.proc.BadJOSEException("Encrypted JWTs are not supported");
+                }
+            };
+
+            return new NimbusJwtDecoder(customProcessor);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to configure JwtDecoder: " + e.getMessage(), e);
         }
     }
 
@@ -61,18 +127,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/categories").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                    "/api/posts",
+                    "/api/posts/**"
+                ).permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
-                .bearerTokenResolver(bearerTokenResolver())
                 .jwt(jwt -> jwt
                     .decoder(jwtDecoder())
                     .jwtAuthenticationConverter(customJwtAuthenticationConverter)
                 )
             );
-        
+
         return http.build();
     }
 
@@ -86,23 +154,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    public BearerTokenResolver bearerTokenResolver() {
-        return request -> {
-            if (request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if (cookie.getName().startsWith("better-auth.session_token")) {
-                        return cookie.getValue();
-                    }
-                }
-            }
-            String header = request.getHeader("Authorization");
-            if (header != null && header.startsWith("Bearer ")) {
-                return header.substring(7);
-            }
-            return null;
-        };
     }
 }

@@ -87,6 +87,20 @@
 			<version>3.0.2</version>
 		</dependency>
 
+		<!-- Bouncy Castle: required for Ed25519 OctetKeyPair.toPublicKey() in Nimbus JOSE -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.78.1</version>
+		</dependency>
+
+		<!-- Tink: required for Nimbus Ed25519Verifier -->
+		<dependency>
+			<groupId>com.google.crypto.tink</groupId>
+			<artifactId>tink</artifactId>
+			<version>1.13.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -95,11 +109,12 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.tigo.TigoBackendApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-						</exclude>
+							</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
