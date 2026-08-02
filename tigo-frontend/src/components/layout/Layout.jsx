@@ -14,7 +14,7 @@ export default function Layout() {
         <div className="min-h-screen flex flex-col w-full relative">
             <Navbar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="flex-1 w-full flex flex-row">
-                <Sidebar isOpen={sidebarOpen} />
+                <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
                 <main className="flex-1 min-w-0 flex">
                     <Outlet />
                 </main>

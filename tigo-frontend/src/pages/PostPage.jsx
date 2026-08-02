@@ -60,12 +60,12 @@ export default function PostPage() {
             
             <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-16 xl:px-24 py-8">
                 <article className="w-full">
-                    <div className="flex flex-wrap gap-2 mb-6 max-w-[800px] mx-auto">
+                    <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 mb-6 max-w-[800px] mx-auto pb-1 w-full">
                         {post.tags?.map((tag, idx) => {
                             const name = typeof tag === 'object' ? tag.name : tag;
                             const followed = typeof tag === 'object' ? tag.followed : false;
                             return (
-                                <div key={idx} className="flex items-center gap-1.5 px-3 py-1 bg-social-bg rounded-full text-xs text-text-h cursor-pointer hover:bg-border transition-colors">
+                                <div key={idx} className="flex flex-shrink-0 items-center gap-1.5 px-3 py-1 bg-social-bg rounded-full text-xs text-text-h cursor-pointer hover:bg-border transition-colors whitespace-nowrap">
                                     <span>{name}</span>
                                     {followed ? <Check size={12} /> : <Plus size={12} />}
                                 </div>
@@ -117,7 +117,7 @@ export default function PostPage() {
                         </figure>
                     )}
 
-                    <div className="prose prose-lg mx-auto max-w-[680px] text-text text-left prose-headings:font-serif prose-headings:font-bold prose-headings:text-text-h prose-p:leading-relaxed">
+                    <div className="prose prose-lg mx-auto max-w-[680px] text-text text-left prose-headings:font-serif prose-headings:font-bold prose-headings:text-text-h prose-p:leading-relaxed prose-p:my-6 prose-headings:mt-12 prose-headings:mb-6">
                         {(() => {
                             try {
                                 const parsedData = JSON.parse(post.content);

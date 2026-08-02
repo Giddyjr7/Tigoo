@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, Bookmark, User, FileText, BarChart2, Settings } from 'lucide-react';
 import { MOCK_CATEGORIES } from '../../mocks/mockData';
 
-export default function Sidebar({ isOpen = true }) {
+export default function Sidebar({ isOpen = true, toggleSidebar }) {
     const location = useLocation();
     const currentPath = location.pathname;
 
@@ -15,11 +15,21 @@ export default function Sidebar({ isOpen = true }) {
     ];
 
     return (
-        <aside 
-            className={`flex-shrink-0 hidden md:flex flex-col sticky top-[57px] h-[calc(100vh-57px)] overflow-x-hidden overflow-y-auto transition-[width,padding,opacity] duration-300 ease-in-out
-                ${isOpen ? 'w-[260px] pl-6 pr-4 border-r border-border opacity-100' : 'w-0 px-0 border-r-transparent opacity-0'}
-            `}
-        >
+        <>
+            {/* Mobile Backdrop */}
+            <div 
+                className={`fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
+                onClick={toggleSidebar}
+            />
+
+            <aside 
+                className={`flex flex-col bg-white overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out border-r border-border
+                    fixed top-[57px] left-0 h-[calc(100vh-57px)] z-50 w-[260px] pl-6 pr-4
+                    ${isOpen ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'}
+                    md:sticky md:translate-x-0 md:flex-shrink-0 md:z-0
+                    ${isOpen ? 'md:w-[260px] md:opacity-100 md:pl-6 md:pr-4' : 'md:w-0 md:px-0 md:border-r-transparent md:opacity-0'}
+                `}
+            >
             <div className="w-full flex flex-col flex-1 py-8">
                 <nav className="flex flex-col gap-1 mb-10">
                 {navItems.map((item) => {
@@ -72,5 +82,6 @@ export default function Sidebar({ isOpen = true }) {
             </div>
             </div>
         </aside>
+        </>
     );
 }

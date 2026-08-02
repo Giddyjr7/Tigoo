@@ -36,7 +36,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="border-b border-border mb-8">
-                        <nav className="flex gap-8 overflow-x-auto no-scrollbar">
+                        <nav className="flex flex-nowrap gap-8 overflow-x-auto no-scrollbar w-full">
                             {tabs.map(tab => {
                                 const isActive = tab.exact ? pathname === tab.path : pathname.startsWith(tab.path);
                                 return (

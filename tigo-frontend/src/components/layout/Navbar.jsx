@@ -12,7 +12,7 @@ export default function Navbar({ sidebarOpen, toggleSidebar }) {
             <div className="flex items-center gap-4 flex-1">
                 <button 
                     onClick={toggleSidebar} 
-                    className="p-1 text-text hover:text-text-h transition-colors hidden md:block"
+                    className="p-2 -ml-2 mr-1 text-text hover:text-text-h transition-colors"
                     title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
                 >
                     <Menu size={24} />

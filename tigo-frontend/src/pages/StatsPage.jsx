@@ -13,7 +13,7 @@ export default function StatsPage() {
                 </div>
 
                 <div className="w-full border-b border-[#F2F2F2] mb-12">
-                    <nav className="flex gap-8 overflow-x-auto no-scrollbar -mb-[1px]">
+                    <nav className="flex flex-nowrap gap-8 overflow-x-auto no-scrollbar -mb-[1px] w-full">
                         <Link to="#" className="pb-4 text-[14px] whitespace-nowrap transition-colors border-b-[2px] border-black text-[#242424] font-bold">
                             Stories
                         </Link>
