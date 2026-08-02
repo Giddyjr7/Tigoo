@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { format } from 'date-fns';
 import { Loader2, MessageCircle, ThumbsUp } from 'lucide-react';
+import editorJsHtml from 'editorjs-html';
+import DOMPurify from 'dompurify';
 
 export default function PostPage() {
     const { slug } = useParams();
@@ -97,11 +99,20 @@ export default function PostPage() {
             )}
 
             <div className="prose prose-lg dark:prose-invert max-w-none text-text">
-                {/* 
-                  NOTE: Currently treating content as plain text / raw HTML string for Phase 5.
-                  In Phase 6 (Editor), if this is Editor.js JSON, we will need a parser here (e.g. editorjs-html).
-                */}
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                {(() => {
+                    try {
+                        const parsedData = JSON.parse(post.content);
+                        const edjsParser = editorJsHtml();
+                        const htmlList = edjsParser.parse(parsedData);
+                        const rawHtml = htmlList.join('');
+                        const cleanHtml = DOMPurify.sanitize(rawHtml);
+                        return <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
+                    } catch (e) {
+                        // Fallback in case content is not valid JSON (e.g. legacy plain text)
+                        const cleanHtml = DOMPurify.sanitize(post.content);
+                        return <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
+                    }
+                })()}
             </div>
 
             <div className="mt-12 pt-6 border-t border-border flex items-center justify-between text-text">

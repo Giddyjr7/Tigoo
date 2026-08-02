@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import PostPage from './pages/PostPage';
 import ProfileStub from './pages/ProfileStub';
+import EditorPage from './pages/EditorPage';
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
             <Route path="/profile/:userId" element={<ProfileStub />} />
             <Route path="/write" element={
               <ProtectedRoute>
-                <div>Editor goes here</div>
+                <EditorPage />
               </ProtectedRoute>
             } />
           </Route>
