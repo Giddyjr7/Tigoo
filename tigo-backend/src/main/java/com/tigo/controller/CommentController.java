@@ -32,8 +32,8 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<CommentResponse> getCommentsForPost(@PathVariable UUID postId) {
-        return commentService.getCommentsForPost(postId);
+    public List<CommentResponse> getCommentsForPost(@PathVariable UUID postId, @CurrentUser User requester) {
+        return commentService.getCommentsForPost(postId, requester);
     }
 
     @DeleteMapping("/{commentId}")

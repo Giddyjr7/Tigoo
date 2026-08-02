@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { authClient } from '../lib/auth-client';
 import { api } from '../lib/api';
 
@@ -15,13 +16,11 @@ export const AuthProvider = ({ children }) => {
                     const token = sessionResult?.data?.session?.token;
                     
                     if (token) {
-                        const res = await api.get('/api/users/me');
-                        console.log('User synced to backend:', res.data);
-                    } else {
-                        console.log('No JWT token found — full result:', JSON.stringify(sessionResult, null, 2));
+                        await api.get('/api/users/me');
                     }
                 } catch (err) {
                     console.error('Failed to sync user to backend:', err);
+                    toast.error('Failed to sync your account. Some features may not work correctly.');
                 }
             }
         };

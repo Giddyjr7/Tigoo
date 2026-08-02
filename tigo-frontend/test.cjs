@@ -1,1 +1,0 @@
-const edjs = require('editorjs-html'); const blocks = [{id: 'h1', type: 'header', data: {text: '1. The Foundation', level: 2}}]; try { const parser = edjs(); console.log(parser.parse({blocks})); } catch(e) { console.error(e) }

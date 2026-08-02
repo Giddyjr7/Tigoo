@@ -59,9 +59,14 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getCommentsForPost(UUID postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new ResourceNotFoundException("Post not found");
+    public List<CommentResponse> getCommentsForPost(UUID postId, User requester) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (post.getStatus() == PostStatus.DRAFT) {
+            if (requester == null || !post.getAuthor().getId().equals(requester.getId())) {
+                throw new UnauthorizedAccessException("You don't have permission to view this draft's comments");
+            }
         }
 
         List<Comment> allComments = commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
