@@ -5,7 +5,10 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import PostPage from './pages/PostPage';
-import ProfileStub from './pages/ProfileStub';
+import ProfilePage from './pages/ProfilePage';
+import StoriesPage from './pages/StoriesPage';
+import StatsPage from './pages/StatsPage';
+import TagPage from './pages/TagPage';
 import EditorPage from './pages/EditorPage';
 import LibraryPage from './pages/LibraryPage';
 
@@ -17,9 +20,12 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/library/*" element={<LibraryPage />} />
+            <Route path="/stories/*" element={<StoriesPage />} />
+            <Route path="/stats/*" element={<StatsPage />} />
+            <Route path="/tag/:slug" element={<TagPage />} />
             <Route path="/post/:slug" element={<PostPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile/:userId" element={<ProfileStub />} />
+            <Route path="/profile/:userId/*" element={<ProfilePage />} />
             <Route path="/write" element={
               <ProtectedRoute>
                 <EditorPage />
