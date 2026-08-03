@@ -8,7 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 
 export default function PostCard({ post, onHide, onUnsave, onDelete }) {
-    const { totalClaps, handleClap } = useClaps(post.id, post.clapCount || 0);
+    const { totalClaps, userClaps, handleClap } = useClaps(post.id, post.clapCount || 0);
     const { user } = useAuth();
     
     // We don't have isSaved from the backend in the summary DTO yet, so we'll just track it locally for optimistic UI if they click it.
