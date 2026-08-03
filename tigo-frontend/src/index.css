@@ -6,18 +6,26 @@
   --font-serif: var(--serif);
   --font-mono: var(--mono);
   --color-border: #f2f2f2;
+  --color-text: #6b6b6b;
+  --color-text-h: #242424;
+  --color-bg: #ffffff;
+  --color-code-bg: #f9f9f9;
+  --color-accent: #1a8917;
+  --color-accent-bg: rgba(26, 137, 23, 0.1);
+  --color-accent-border: rgba(26, 137, 23, 0.5);
+  --color-social-bg: #f9f9f9;
 }
 
 :root {
-  --text: #6b6b6b;
-  --text-h: #242424;
-  --bg: #ffffff;
-  --border: #f2f2f2;
-  --code-bg: #f9f9f9;
-  --accent: #1a8917;
-  --accent-bg: rgba(26, 137, 23, 0.1);
-  --accent-border: rgba(26, 137, 23, 0.5);
-  --social-bg: #f9f9f9;
+  --text: var(--color-text);
+  --text-h: var(--color-text-h);
+  --bg: var(--color-bg);
+  --border: var(--color-border);
+  --code-bg: var(--color-code-bg);
+  --accent: var(--color-accent);
+  --accent-bg: var(--color-accent-bg);
+  --accent-border: var(--color-accent-border);
+  --social-bg: var(--color-social-bg);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 

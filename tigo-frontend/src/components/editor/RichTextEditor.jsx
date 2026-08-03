@@ -91,6 +91,6 @@ export default function RichTextEditor({ initialData, onChange, editorRef }) {
     }, []); // Run once on mount
 
     return (
-        <div id="editorjs-container" className="prose prose-lg dark:prose-invert max-w-none w-full min-h-[300px]"></div>
+        <div id="editorjs-container" className="prose prose-lg max-w-none w-full min-h-[300px]"></div>
     );
 }
