@@ -3,6 +3,7 @@ package com.tigo.service;
 import com.tigo.entity.User;
 import com.tigo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,16 @@ public class UserSyncService {
                 .displayName(name)
                 .avatarUrl(picture)
                 .build();
-            return userRepository.save(newUser);
+            try {
+                // saveAndFlush forces the INSERT immediately (User.id is a client-generated UUID,
+                // so Hibernate would otherwise defer it to transaction commit, past this catch).
+                return userRepository.saveAndFlush(newUser);
+            } catch (DataIntegrityViolationException e) {
+                // Lost a race with a concurrent sync for the same user; the other request
+                // already inserted the row, so just read it back.
+                return userRepository.findByGoogleSub(googleSub)
+                        .orElseThrow(() -> e);
+            }
         });
     }
 }

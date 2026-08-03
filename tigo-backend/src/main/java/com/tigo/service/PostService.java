@@ -155,7 +155,7 @@ public class PostService {
                 PostStatus.PUBLISHED,
                 categoryId.orElse(null),
                 tagSlug.orElse(null),
-                search.orElse(null),
+                search.map(s -> "%" + s.toLowerCase() + "%").orElse(null),
                 featured.orElse(null),
                 requester != null ? requester.getId() : null, // Wait, if we pass null, let's just pass null. If it fails we'll fix it. Wait, the query has :userId IS NULL. Let's pass userId or null.
                 pageable

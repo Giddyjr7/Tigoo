@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Query("SELECT p FROM Post p WHERE p.status = :status " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:tagSlug IS NULL OR EXISTS (SELECT t FROM p.tags t WHERE t.slug = :tagSlug)) " +
-           "AND (:search IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (:search IS NULL OR LOWER(p.title) LIKE :search OR LOWER(p.content) LIKE :search) " +
            "AND (:featured IS NULL OR p.featured = :featured) " +
            "AND (:userId IS NULL OR p.id NOT IN (SELECT hp.id FROM User u JOIN u.hiddenPosts hp WHERE u.id = :userId)) " +
            "ORDER BY p.publishedAt DESC")
