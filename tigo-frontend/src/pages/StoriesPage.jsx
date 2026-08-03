@@ -11,7 +11,7 @@ export default function StoriesPage() {
     const basePath = '/stories';
 
     const tabs = [
-        { name: 'Drafts 1', path: basePath, exact: true },
+        { name: 'Drafts', path: basePath, exact: true },
         { name: 'Scheduled', path: `${basePath}/scheduled` },
         { name: 'Published', path: `${basePath}/published` },
         { name: 'Unlisted', path: `${basePath}/unlisted` },

@@ -4,7 +4,7 @@ import { PenSquare, Search, Bell, Menu } from 'lucide-react';
 import UserDropdown from './UserDropdown';
 
 export default function Navbar({ sidebarOpen, toggleSidebar }) {
-    const { user, signOut } = useAuth();
+    const { user } = useAuth();
     
     return (
         <nav className="flex justify-between items-center py-2 px-6 border-b border-[#F2F2F2] bg-white sticky top-0 z-50 h-[57px]">

@@ -227,8 +227,8 @@ export default function PostPage() {
                     {user ? (
                         <div className="bg-bg shadow-sm border border-border rounded-xl p-4 mb-8">
                             <div className="flex items-center gap-3 mb-4">
-                                <img src={user.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} className="w-8 h-8 rounded-full" />
-                                <span className="font-medium text-text-h text-sm">{user.displayName}</span>
+                                <img src={user.avatarUrl || user.image || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'} className="w-8 h-8 rounded-full object-cover" />
+                                <span className="font-medium text-text-h text-sm">{user.displayName || user.name}</span>
                             </div>
                             <textarea 
                                 value={newComment}
@@ -249,10 +249,10 @@ export default function PostPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-bg shadow-sm border border-border rounded-xl p-6 mb-8 text-center">
-                            <p className="text-text mb-4">Sign in to leave a response.</p>
-                            <Link to="/login" className="px-6 py-2 bg-text-h text-bg rounded-full text-sm font-medium hover:bg-opacity-80 transition-colors inline-block">
-                                Sign In
+                        <div className="bg-social-bg border border-border rounded-xl p-4 mb-8 flex items-center justify-between gap-4 flex-wrap">
+                            <span className="text-sm text-text">Sign in to leave a response.</span>
+                            <Link to="/login" className="px-4 py-1.5 bg-text-h text-bg rounded-full text-sm font-medium hover:bg-opacity-90 transition-colors">
+                                Sign in
                             </Link>
                         </div>
                     )}

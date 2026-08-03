@@ -107,8 +107,6 @@ export default function EditorPage() {
             }
             setIsPublishModalOpen(false);
             navigate(`/post/${res.data.slug}`);
-        } catch (err) {
-            throw err; // Let the modal handle the error display
         } finally {
             setIsSaving(false);
         }
