@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -32,9 +33,11 @@ export default function RichTextEditor({ initialData, onChange, editorRef }) {
                     image: {
                         class: ImageTool,
                         config: {
+                            // No backend upload endpoint exists yet, so file uploads are rejected
+                            // and only URL-based images (handled via the custom uploader below) are supported.
                             endpoints: {
-                                byFile: '', // Not implemented yet
-                                byUrl: '' // We handle URL uploads through a custom fetch if needed, but EditorJS byUrl default is usually fine if we provide an endpoint, but since we don't have one, we can just let it embed. Wait, ImageTool requires an endpoint. We can use a dummy endpoint or configure it to just accept URLs and return the expected format.
+                                byFile: '',
+                                byUrl: ''
                             },
                             uploader: {
                                 uploadByUrl(url) {
@@ -47,9 +50,8 @@ export default function RichTextEditor({ initialData, onChange, editorRef }) {
                                         });
                                     });
                                 },
-                                uploadByFile(file) {
-                                     // Return a rejected promise or a dummy response
-                                     return Promise.reject('File upload is not supported yet. Please paste an image URL instead.');
+                                uploadByFile() {
+                                     return Promise.reject(new Error('File upload is not supported yet. Please paste an image URL instead.'));
                                 }
                             }
                         }
@@ -67,6 +69,7 @@ export default function RichTextEditor({ initialData, onChange, editorRef }) {
                             onChange(data);
                         } catch (e) {
                             console.error('Error saving editor content', e);
+                            toast.error('Failed to save your changes. Please try again.');
                         }
                     }
                 },

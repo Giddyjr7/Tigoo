@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: tigo-backend
+    runtime: docker
+    dockerfilePath: ./tigo-backend/Dockerfile
+    dockerContext: ./tigo-backend
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: NEON_JDBC_URL
+        sync: false
+      - key: NEON_DB_USERNAME
+        sync: false
+      - key: NEON_DB_PASSWORD
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

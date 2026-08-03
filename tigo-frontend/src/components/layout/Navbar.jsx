@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { PenSquare, Search, Bell, Menu } from 'lucide-react';
-import { MOCK_USERS } from '../../mocks/mockData';
 import UserDropdown from './UserDropdown';
 
 export default function Navbar({ sidebarOpen, toggleSidebar }) {

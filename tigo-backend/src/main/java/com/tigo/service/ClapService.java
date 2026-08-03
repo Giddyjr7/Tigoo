@@ -4,8 +4,10 @@ import com.tigo.dto.ClapRequest;
 import com.tigo.dto.ClapResponse;
 import com.tigo.entity.Clap;
 import com.tigo.entity.Post;
+import com.tigo.entity.PostStatus;
 import com.tigo.entity.User;
 import com.tigo.exception.ResourceNotFoundException;
+import com.tigo.exception.UnauthorizedAccessException;
 import com.tigo.repository.ClapRepository;
 import com.tigo.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,10 @@ public class ClapService {
     public ClapResponse addClaps(UUID postId, ClapRequest request, User user) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (post.getStatus() == PostStatus.DRAFT && !post.getAuthor().getId().equals(user.getId())) {
+            throw new UnauthorizedAccessException("You don't have permission to clap on this draft");
+        }
 
         Optional<Clap> existingClapOpt = clapRepository.findByPostIdAndUserId(postId, user.getId());
         
@@ -75,6 +81,12 @@ public class ClapService {
     public ClapResponse getClapStatus(UUID postId, User user) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (post.getStatus() == PostStatus.DRAFT) {
+            if (user == null || !post.getAuthor().getId().equals(user.getId())) {
+                throw new UnauthorizedAccessException("You don't have permission to view this draft's clap status");
+            }
+        }
 
         int userClapCount = 0;
         if (user != null) {

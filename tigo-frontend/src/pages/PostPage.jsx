@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { CheckCircle, Plus, Check, ThumbsUp } from 'lucide-react';
+import edjsHTML from 'editorjs-html';
 import DOMPurify from 'dompurify';
 import { MOCK_POSTS } from '../mocks/mockData';
 import PostActionBar from '../components/post/PostActionBar';
@@ -11,6 +12,18 @@ import ProgressRail from '../components/post/ProgressRail';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+
+// Custom parsers for block types whose default editorjs-html markup doesn't
+// match the design (quote/image need extra wrapper markup); header, paragraph,
+// list, and code fall back to the library's built-in parsers.
+const editorJsParser = edjsHTML({
+    quote: ({ data }) => `<blockquote><p>${data.text}</p><cite>${data.caption || ''}</cite></blockquote>`,
+    image: ({ data }) => {
+        const url = data.file?.url || data.url;
+        const caption = data.caption || '';
+        return `<figure><img src="${url}" alt="${caption}" /><figcaption>${caption}</figcaption></figure>`;
+    }
+});
 
 export default function PostPage() {
     const { slug } = useParams();
@@ -106,6 +119,7 @@ export default function PostPage() {
         );
     }
 
+
     const recommended = MOCK_POSTS.filter(p => p.id !== post.id).slice(0, 4);
 
     return (
@@ -172,26 +186,8 @@ export default function PostPage() {
                         {(() => {
                             try {
                                 const parsedData = JSON.parse(post.content);
-                                
-                                const htmlList = parsedData.blocks.map(block => {
-                                    switch (block.type) {
-                                        case 'paragraph': 
-                                            return `<p>${block.data.text}</p>`;
-                                        case 'header': 
-                                            return `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
-                                        case 'list':
-                                            const tag = block.data.style === 'ordered' ? 'ol' : 'ul';
-                                            const items = block.data.items.map(item => `<li>${item}</li>`).join('');
-                                            return `<${tag}>${items}</${tag}>`;
-                                        case 'image':
-                                            const url = block.data.file?.url || block.data.url;
-                                            return `<figure><img src="${url}" alt="${block.data.caption || ''}" /><figcaption>${block.data.caption || ''}</figcaption></figure>`;
-                                        case 'quote':
-                                            return `<blockquote><p>${block.data.text}</p><cite>${block.data.caption || ''}</cite></blockquote>`;
-                                        default:
-                                            return '';
-                                    }
-                                });
+
+                                const htmlList = parsedData.blocks.map(block => editorJsParser.parseBlock(block));
                                 
                                 const ctaHtml = `
                                     <div class="my-10 p-6 bg-social-bg rounded-lg border border-border flex flex-col items-center text-center not-prose">
@@ -292,7 +288,7 @@ export default function PostPage() {
                 <div className="max-w-[1000px] mx-auto border-t border-border pt-12">
                     {moreFromAuthor.length > 0 && (
                         <div className="mb-16">
-                            <h2 className="text-2xl font-bold font-serif text-text-h mb-8">More from {post.author.displayName}</h2>
+                            <h2 className="text-2xl font-bold font-serif text-text-h mb-8">More from {post.author?.displayName}</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {moreFromAuthor.map(p => <GridPostCard key={p.id} post={p} />)}
                             </div>
