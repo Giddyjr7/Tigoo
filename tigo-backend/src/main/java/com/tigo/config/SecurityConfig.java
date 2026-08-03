@@ -168,7 +168,7 @@ public class SecurityConfig {
                     "/api/posts/**"
                 ).permitAll()
                 .requestMatchers("/api/**").authenticated()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt

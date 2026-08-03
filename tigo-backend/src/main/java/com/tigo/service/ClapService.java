@@ -26,14 +26,16 @@ public class ClapService {
 
     @Transactional
     public ClapResponse addClaps(UUID postId, ClapRequest request, User user) {
-        Post post = postRepository.findById(postId)
+        // Lock the post row first, then the clap row, in that consistent order across all callers,
+        // to serialize concurrent claps on the same post/user and avoid lock-order deadlocks.
+        Post post = postRepository.findByIdForUpdate(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         if (post.getStatus() == PostStatus.DRAFT && !post.getAuthor().getId().equals(user.getId())) {
             throw new UnauthorizedAccessException("You don't have permission to clap on this draft");
         }
 
-        Optional<Clap> existingClapOpt = clapRepository.findByPostIdAndUserId(postId, user.getId());
+        Optional<Clap> existingClapOpt = clapRepository.findByPostIdAndUserIdForUpdate(postId, user.getId());
         
         int requestedAmount = request.getCount();
         int amountAdded = 0;

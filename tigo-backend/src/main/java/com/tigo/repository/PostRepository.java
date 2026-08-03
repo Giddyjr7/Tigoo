@@ -2,9 +2,11 @@ package com.tigo.repository;
 
 import com.tigo.entity.Post;
 import com.tigo.entity.PostStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,12 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     Optional<Post> findBySlug(String slug);
     
     boolean existsBySlug(String slug);
+
+    // Pessimistic write lock used when a post's denormalized counters (e.g. clapCount) are
+    // read-modify-written, so concurrent requests serialize instead of racing and losing updates.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Post p WHERE p.id = :id")
+    Optional<Post> findByIdForUpdate(@Param("id") UUID id);
     
     @Query("SELECT p FROM Post p WHERE p.status = :status " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
