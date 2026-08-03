@@ -53,6 +53,10 @@ public class Post {
     @Builder.Default
     private PostStatus status = PostStatus.DRAFT;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private Boolean featured = false;
+
     @Column(nullable = false)
     @Builder.Default
     private Integer clapCount = 0;

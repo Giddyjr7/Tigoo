@@ -1,20 +1,38 @@
 import { Link, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import ProfileRightSidebar from '../components/layout/ProfileRightSidebar';
 import ProfileHome from '../components/profile/ProfileHome';
 import ProfileReposts from '../components/profile/ProfileReposts';
 import ProfileActivity from '../components/profile/ProfileActivity';
 import ProfileAbout from '../components/profile/ProfileAbout';
 import { useAuth } from '../context/AuthContext';
-import { MOCK_USERS } from '../mocks/mockData';
+import { api } from '../lib/api';
 
 export default function ProfilePage() {
     const { userId } = useParams();
     const location = useLocation();
     const { user: loggedInUser } = useAuth();
+    
+    const [profileUser, setProfileUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const profileUser = MOCK_USERS.find(u => String(u.id) === userId) || MOCK_USERS[0];
-    const isOwnProfile = Boolean(loggedInUser) && String(loggedInUser.id) === String(profileUser.id);
+    useEffect(() => {
+        const fetchUser = async () => {
+            setIsLoading(true);
+            try {
+                const res = await api.get(`/api/users/${userId}`);
+                setProfileUser(res.data);
+            } catch (error) {
+                console.error("Failed to fetch user profile:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUser();
+    }, [userId]);
+
+    const isOwnProfile = Boolean(loggedInUser) && Boolean(profileUser) && String(loggedInUser.id) === String(profileUser.id);
 
     // Base path for tabs
     const basePath = `/profile/${userId}`;
@@ -30,6 +48,22 @@ export default function ProfilePage() {
         { name: 'About', path: `${basePath}/about` },
     ];
 
+    if (isLoading) {
+        return (
+            <div className="flex w-full min-h-[50vh] items-center justify-center">
+                <div className="w-8 h-8 rounded-full border-2 border-text border-t-transparent animate-spin"></div>
+            </div>
+        );
+    }
+
+    if (!profileUser) {
+        return (
+            <div className="flex w-full py-20 items-center justify-center text-text text-lg">
+                User not found.
+            </div>
+        );
+    }
+
     return (
         <div className="flex w-full">
             <div className="flex-1 min-w-0 px-6 md:px-12 lg:px-10 xl:px-14 py-12 flex justify-center">
@@ -37,7 +71,7 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4 min-w-0">
                             <img
-                                src={profileUser.avatarUrl}
+                                src={profileUser.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=fallback'}
                                 alt={profileUser.displayName}
                                 className="w-14 h-14 rounded-full bg-border object-cover flex-shrink-0"
                             />

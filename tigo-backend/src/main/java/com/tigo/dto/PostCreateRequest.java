@@ -28,4 +28,6 @@ public class PostCreateRequest {
 
     @NotNull(message = "Status is required (DRAFT or PUBLISHED)")
     private PostStatus status;
+    
+    private Boolean featured;
 }

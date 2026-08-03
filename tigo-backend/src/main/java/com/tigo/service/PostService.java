@@ -37,6 +37,7 @@ public class PostService {
                 .coverImageUrl(request.getCoverImageUrl())
                 .author(author)
                 .status(request.getStatus())
+                .featured(request.getFeatured() != null ? request.getFeatured() : false)
                 .build();
 
         post.setSlug(generateUniqueSlug(request.getTitle()));
@@ -87,6 +88,10 @@ public class PostService {
             post.setCoverImageUrl(request.getCoverImageUrl());
         }
 
+        if (request.getFeatured() != null) {
+            post.setFeatured(request.getFeatured());
+        }
+
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -134,21 +139,15 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostSummaryResponse> getFeed(Pageable pageable, Optional<Integer> categoryId, Optional<String> tagSlug) {
-        Page<Post> posts;
-
-        if (categoryId.isPresent() && tagSlug.isPresent()) {
-            posts = postRepository.findByStatusAndCategoryIdAndTags_SlugOrderByPublishedAtDesc(
-                    PostStatus.PUBLISHED, categoryId.get(), tagSlug.get(), pageable);
-        } else if (categoryId.isPresent()) {
-            posts = postRepository.findByStatusAndCategoryIdOrderByPublishedAtDesc(
-                    PostStatus.PUBLISHED, categoryId.get(), pageable);
-        } else if (tagSlug.isPresent()) {
-            posts = postRepository.findByStatusAndTags_SlugOrderByPublishedAtDesc(
-                    PostStatus.PUBLISHED, tagSlug.get(), pageable);
-        } else {
-            posts = postRepository.findByStatusOrderByPublishedAtDesc(PostStatus.PUBLISHED, pageable);
-        }
+    public Page<PostSummaryResponse> getFeed(Pageable pageable, Optional<Integer> categoryId, Optional<String> tagSlug, Optional<String> search, Optional<Boolean> featured) {
+        Page<Post> posts = postRepository.findFeed(
+                PostStatus.PUBLISHED,
+                categoryId.orElse(null),
+                tagSlug.orElse(null),
+                search.orElse(null),
+                featured.orElse(null),
+                pageable
+        );
 
         return posts.map(this::mapToSummaryResponse);
     }

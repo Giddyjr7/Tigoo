@@ -13,6 +13,8 @@ import EditorPage from './pages/EditorPage';
 import LibraryPage from './pages/LibraryPage';
 import RefineRecommendationsPage from './pages/RefineRecommendationsPage';
 
+import SearchPage from './pages/SearchPage';
+
 export default function App() {
   return (
     <AuthProvider>
@@ -20,6 +22,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/library/*" element={<LibraryPage />} />
             <Route path="/stories/*" element={<StoriesPage />} />
             <Route path="/stats/*" element={<StatsPage />} />

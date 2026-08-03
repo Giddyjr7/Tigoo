@@ -35,8 +35,10 @@ public class PostController {
     public Page<PostSummaryResponse> getFeed(
             Pageable pageable,
             @RequestParam(required = false) Integer categoryId,
-            @RequestParam(required = false) String tagSlug) {
-        return postService.getFeed(pageable, Optional.ofNullable(categoryId), Optional.ofNullable(tagSlug));
+            @RequestParam(required = false) String tagSlug,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean featured) {
+        return postService.getFeed(pageable, Optional.ofNullable(categoryId), Optional.ofNullable(tagSlug), Optional.ofNullable(search), Optional.ofNullable(featured));
     }
 
     @GetMapping("/{slug}")

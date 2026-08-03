@@ -16,31 +16,31 @@ export default function HomePage() {
     const [hasMore, setHasMore] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchPosts = async (pageNum, append = false) => {
+    const fetchPosts = async (pageNum, tab, append = false) => {
         setIsLoading(true);
         try {
-            const res = await api.get(`/api/posts?page=${pageNum}&size=10`);
+            const queryParam = tab === 'featured' ? '?featured=true&' : '?';
+            const res = await api.get(`/api/posts${queryParam}page=${pageNum}&size=10`);
             const fetchedPosts = res.data.content;
             setPosts(prev => append ? [...prev, ...fetchedPosts] : fetchedPosts);
             setHasMore(!res.data.last);
         } catch (error) {
             console.error("Failed to fetch posts:", error);
+            if (!append) setPosts([]);
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (activeTab === 'for-you') {
-            fetchPosts(0);
-            setPage(0);
-        }
+        fetchPosts(0, activeTab);
+        setPage(0);
     }, [activeTab]);
 
     const handleLoadMore = () => {
         const nextPage = page + 1;
         setPage(nextPage);
-        fetchPosts(nextPage, true);
+        fetchPosts(nextPage, activeTab, true);
     };
 
     const handleTabClick = (tabId) => {
@@ -49,7 +49,7 @@ export default function HomePage() {
         window.scrollTo({ top: 0 });
     };
 
-    const displayPosts = activeTab === 'featured' ? MOCK_FEATURED_POSTS : posts;
+    const displayPosts = posts;
 
     return (
         <div className="flex w-full">

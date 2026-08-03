@@ -20,4 +20,5 @@ public class PostUpdateRequest {
     private Integer categoryId;
     private List<String> tagNames;
     private PostStatus status;
+    private Boolean featured;
 }

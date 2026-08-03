@@ -1,10 +1,20 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { PenSquare, Search, Bell, Menu } from 'lucide-react';
 import UserDropdown from './UserDropdown';
+import { useState } from 'react';
 
 export default function Navbar({ sidebarOpen, toggleSidebar }) {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
     
     return (
         <nav className="flex justify-between items-center py-2 px-6 border-b border-[#F2F2F2] bg-white sticky top-0 z-50 h-[57px]">
@@ -19,14 +29,16 @@ export default function Navbar({ sidebarOpen, toggleSidebar }) {
                 <Link to="/" className="text-3xl font-bold font-serif text-text-h tracking-tighter">
                     TIGO
                 </Link>
-                <div className="hidden md:flex items-center bg-[#F9F9F9] rounded-full px-4 py-2 ml-4 focus-within:bg-white focus-within:border focus-within:border-border transition-colors border border-transparent">
-                    <Search size={20} className="text-text" />
+                <form onSubmit={handleSearch} className="hidden md:flex items-center bg-[#F9F9F9] rounded-full px-4 py-2 ml-4 focus-within:bg-white focus-within:border focus-within:border-border transition-colors border border-transparent">
+                    <Search size={20} className="text-text cursor-pointer" onClick={handleSearch} />
                     <input 
                         type="text" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search" 
                         className="bg-transparent border-none outline-none ml-2 text-sm w-48 text-text-h placeholder-text"
                     />
-                </div>
+                </form>
             </div>
             
             <div className="flex items-center gap-6">
