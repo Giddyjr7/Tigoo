@@ -1,5 +1,6 @@
 import { MOCK_POSTS } from '../../mocks/mockData';
 import PostCard from '../post/PostCard';
+import toast from 'react-hot-toast';
 
 export default function ReadingHistory() {
     return (
@@ -9,7 +10,10 @@ export default function ReadingHistory() {
                 <p className="text-text-h text-[15px] mb-4 sm:mb-0">
                     You can clear your reading history for a fresh start.
                 </p>
-                <button className="bg-[#c94a4a] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#b03d3d] transition-colors self-start sm:self-auto">
+                <button 
+                    onClick={() => toast('Clearing history is coming soon!', { icon: '🚧' })}
+                    className="bg-[#c94a4a] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#b03d3d] transition-colors self-start sm:self-auto"
+                >
                     Clear history
                 </button>
             </div>

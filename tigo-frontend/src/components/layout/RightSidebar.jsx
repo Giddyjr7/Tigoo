@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { MOCK_RECOMMENDED_TOPICS, MOCK_WHO_TO_FOLLOW } from '../../mocks/mockData';
+import toast from 'react-hot-toast';
 
 export default function RightSidebar() {
     return (
@@ -36,7 +37,10 @@ export default function RightSidebar() {
                                     <p className="text-text text-sm line-clamp-2 leading-snug">{user.bio}</p>
                                 </Link>
                             </div>
-                            <button className="px-4 py-1.5 bg-text-h text-bg hover:bg-opacity-80 rounded-full text-sm font-medium transition-colors whitespace-nowrap">
+                            <button 
+                                onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })}
+                                className="px-4 py-1.5 bg-text-h text-bg hover:bg-opacity-80 rounded-full text-sm font-medium transition-colors whitespace-nowrap"
+                            >
                                 Follow
                             </button>
                         </div>

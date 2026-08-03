@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function PostAuthorCard({ author }) {
     if (!author) return null;
@@ -25,10 +26,16 @@ export default function PostAuthorCard({ author }) {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-5 py-2 bg-text-h text-bg rounded-full font-medium hover:bg-opacity-90 transition-all text-sm">
+                    <button 
+                        onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })}
+                        className="px-5 py-2 bg-text-h text-bg rounded-full font-medium hover:bg-opacity-90 transition-all text-sm"
+                    >
                         Follow
                     </button>
-                    <button className="w-10 h-10 flex items-center justify-center bg-bg border border-border text-text-h rounded-full hover:bg-social-bg transition-all" title="Support this author">
+                    <button 
+                        onClick={() => toast('Support/Tip is coming soon!', { icon: '🚧' })}
+                        className="w-10 h-10 flex items-center justify-center bg-bg border border-border text-text-h rounded-full hover:bg-social-bg transition-all" title="Support this author"
+                    >
                         <Heart size={18} />
                     </button>
                 </div>

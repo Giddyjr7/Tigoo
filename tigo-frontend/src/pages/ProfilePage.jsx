@@ -8,6 +8,7 @@ import ProfileActivity from '../components/profile/ProfileActivity';
 import ProfileAbout from '../components/profile/ProfileAbout';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
     const { userId } = useParams();
@@ -83,7 +84,10 @@ export default function ProfilePage() {
                                     Edit profile
                                 </Link>
                             ) : (
-                                <button className="px-4 py-1.5 rounded-full bg-text-h text-bg text-[14px] font-medium hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                <button 
+                                    onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })}
+                                    className="px-4 py-1.5 rounded-full bg-text-h text-bg text-[14px] font-medium hover:bg-opacity-90 transition-colors whitespace-nowrap"
+                                >
                                     Follow
                                 </button>
                             )}

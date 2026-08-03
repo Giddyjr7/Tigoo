@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import { MOCK_USERS, MOCK_WHO_TO_FOLLOW } from '../../mocks/mockData';
+import toast from 'react-hot-toast';
 
 export default function ProfileRightSidebar({ user = MOCK_USERS[0], isOwnProfile = false }) {
     return (
@@ -19,7 +20,10 @@ export default function ProfileRightSidebar({ user = MOCK_USERS[0], isOwnProfile
                         Edit profile
                     </Link>
                 ) : (
-                    <button className="text-accent text-sm hover:text-green-700 transition-colors">
+                    <button 
+                        onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })}
+                        className="text-accent text-sm hover:text-green-700 transition-colors"
+                    >
                         Follow
                     </button>
                 )}

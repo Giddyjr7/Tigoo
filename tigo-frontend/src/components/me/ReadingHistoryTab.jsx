@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Trash2, ThumbsUp, MessageCircle, BookmarkPlus, MoreHorizontal } from 'lucide-react';
 import { MOCK_POSTS } from '../../mocks/mockData';
+import toast from 'react-hot-toast';
 
 export default function ReadingHistoryTab() {
     return (
@@ -10,7 +11,10 @@ export default function ReadingHistoryTab() {
                 <span className="text-[15px] text-[#242424] font-medium">
                     You can clear your reading history for a fresh start.
                 </span>
-                <button className="bg-[#c9184a] text-white px-5 py-2 rounded-full text-[14px] font-medium hover:bg-red-700 transition-colors whitespace-nowrap">
+                <button 
+                    onClick={() => toast('Clearing history is coming soon!', { icon: '🚧' })}
+                    className="bg-[#c9184a] text-white px-5 py-2 rounded-full text-[14px] font-medium hover:bg-red-700 transition-colors whitespace-nowrap"
+                >
                     Clear history
                 </button>
             </div>
@@ -46,21 +50,21 @@ export default function ReadingHistoryTab() {
                             {/* Footer Actions */}
                             <div className="flex items-center justify-between text-text">
                                 <div className="flex items-center gap-4 text-[13px]">
-                                    <span className="flex items-center gap-1.5 hover:text-[#242424] transition-colors cursor-pointer">
+                                    <span onClick={() => toast('Comment claps are coming soon!', { icon: '🚧' })} className="flex items-center gap-1.5 hover:text-[#242424] transition-colors cursor-pointer">
                                         <ThumbsUp size={16} /> {post.clapCount}
                                     </span>
-                                    <span className="flex items-center gap-1.5 hover:text-[#242424] transition-colors cursor-pointer">
+                                    <span onClick={() => toast('Comments are coming soon!', { icon: '🚧' })} className="flex items-center gap-1.5 hover:text-[#242424] transition-colors cursor-pointer">
                                         <MessageCircle size={16} /> 3
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <button className="text-text hover:text-[#242424] transition-colors" title="Remove from history">
+                                    <button onClick={() => toast('History management is coming soon!', { icon: '🚧' })} className="text-text hover:text-[#242424] transition-colors" title="Remove from history">
                                         <Trash2 size={20} strokeWidth={1.5} />
                                     </button>
-                                    <button className="text-text hover:text-[#242424] transition-colors">
+                                    <button onClick={() => toast('Bookmarks are coming soon!', { icon: '🚧' })} className="text-text hover:text-[#242424] transition-colors">
                                         <BookmarkPlus size={20} strokeWidth={1.5} />
                                     </button>
-                                    <button className="text-text hover:text-[#242424] transition-colors">
+                                    <button onClick={() => toast('More options coming soon!', { icon: '🚧' })} className="text-text hover:text-[#242424] transition-colors">
                                         <MoreHorizontal size={20} strokeWidth={1.5} />
                                     </button>
                                 </div>

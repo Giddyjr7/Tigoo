@@ -133,7 +133,7 @@ export default function PostPage() {
                             const name = typeof tag === 'object' ? tag.name : tag;
                             const followed = typeof tag === 'object' ? tag.followed : false;
                             return (
-                                <div key={idx} className="flex flex-shrink-0 items-center gap-1.5 px-3 py-1 bg-social-bg rounded-full text-xs text-text-h cursor-pointer hover:bg-border transition-colors whitespace-nowrap">
+                                <div onClick={() => toast('Following topics is coming soon!', { icon: '🚧' })} key={idx} className="flex flex-shrink-0 items-center gap-1.5 px-3 py-1 bg-social-bg rounded-full text-xs text-text-h cursor-pointer hover:bg-border transition-colors whitespace-nowrap">
                                     <span>{name}</span>
                                     {followed ? <Check size={12} /> : <Plus size={12} />}
                                 </div>
@@ -160,7 +160,7 @@ export default function PostPage() {
                                 </Link>
                                 <CheckCircle size={14} className="text-accent fill-accent text-bg" />
                                 <span className="text-text">&bull;</span>
-                                <button className="text-accent font-medium hover:text-text-h transition-colors">Follow</button>
+                                <button onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })} className="text-accent font-medium hover:text-text-h transition-colors">Follow</button>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-text mt-0.5">
                                 <span>{post.readTimeMin} min read</span>
@@ -276,7 +276,7 @@ export default function PostPage() {
                                 </div>
                                 <p className="text-text-h text-sm leading-relaxed mb-4 whitespace-pre-wrap">{comment.content}</p>
                                 <div className="flex items-center gap-4 text-text text-sm">
-                                    <button className="flex items-center gap-1 hover:text-text-h">
+                                    <button onClick={() => toast('Comment claps are coming soon!', { icon: '🚧' })} className="flex items-center gap-1 hover:text-text-h">
                                         <ThumbsUp size={16} /> 0
                                     </button>
                                 </div>

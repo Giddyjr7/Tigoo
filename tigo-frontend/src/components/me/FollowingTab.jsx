@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { MOCK_WHO_TO_FOLLOW } from '../../mocks/mockData';
+import toast from 'react-hot-toast';
 
 export default function FollowingTab() {
     return (
@@ -25,7 +26,10 @@ export default function FollowingTab() {
                             </p>
                         </div>
                         
-                        <button className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-border text-[14px] text-text hover:border-gray-400 transition-colors whitespace-nowrap">
+                        <button 
+                            onClick={() => toast('Unfollowing writers is coming soon!', { icon: '🚧' })}
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-border text-[14px] text-text hover:border-gray-400 transition-colors whitespace-nowrap"
+                        >
                             Following
                             <ChevronDown size={14} className="text-text" />
                         </button>

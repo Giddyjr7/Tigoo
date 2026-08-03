@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function GridPostCard({ post }) {
     if (!post) return null;
@@ -40,11 +41,11 @@ export default function GridPostCard({ post }) {
                     <div className="flex items-center gap-4">
                         <span>{post.readTimeMin} min read</span>
                         <span className="flex items-center gap-1"><ThumbsUp size={16} /> {post.clapCount || 0}</span>
-                        <span className="flex items-center gap-1"><MessageCircle size={16} /> 0</span>
+                        <span className="flex items-center gap-1" onClick={(e) => { e.preventDefault(); toast('Comments are coming soon!', { icon: '🚧' }); }}><MessageCircle size={16} className="cursor-pointer" /> 0</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} /></button>
-                        <button className="hover:text-text-h transition-colors" title="More"><MoreHorizontal size={20} strokeWidth={1.5} /></button>
+                        <button onClick={(e) => { e.preventDefault(); toast('Bookmarks are coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} /></button>
+                        <button onClick={(e) => { e.preventDefault(); toast('More options coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="More"><MoreHorizontal size={20} strokeWidth={1.5} /></button>
                     </div>
                 </div>
             </div>

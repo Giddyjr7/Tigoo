@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MOCK_WHO_TO_FOLLOW } from '../../mocks/mockData';
+import toast from 'react-hot-toast';
 
 export default function SuggestionsTab() {
     return (
@@ -24,7 +25,10 @@ export default function SuggestionsTab() {
                             </p>
                         </div>
                         
-                        <button className="flex items-center px-4 py-1.5 rounded-full border border-black text-[14px] text-black hover:bg-black hover:text-white transition-colors whitespace-nowrap">
+                        <button 
+                            onClick={() => toast('Following writers is coming soon!', { icon: '🚧' })}
+                            className="flex items-center px-4 py-1.5 rounded-full border border-black text-[14px] text-black hover:bg-black hover:text-white transition-colors whitespace-nowrap"
+                        >
                             Follow
                         </button>
                     </div>

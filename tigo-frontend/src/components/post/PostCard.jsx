@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal, ThumbsDown } from 'lucide-react';
 import { useClaps } from '../../hooks/useClaps';
+import toast from 'react-hot-toast';
 
 export default function PostCard({ post }) {
     const { totalClaps, handleClap } = useClaps(post.id, post.clapCount || 0);
@@ -46,7 +47,7 @@ export default function PostCard({ post }) {
                                 <ThumbsUp size={18} strokeWidth={1.5} />
                                 <span>{totalClaps}</span>
                             </span>
-                            <span className="flex items-center gap-1.5 hover:text-text-h cursor-pointer transition-colors" title="Comments">
+                            <span onClick={() => toast('Comments are coming soon!', { icon: '🚧' })} className="flex items-center gap-1.5 hover:text-text-h cursor-pointer transition-colors" title="Comments">
                                 <MessageCircle size={18} strokeWidth={1.5} />
                                 <span>0</span>
                             </span>
@@ -56,13 +57,13 @@ export default function PostCard({ post }) {
                         </div>
                     </div>
                     <div className="flex items-center gap-4 text-text">
-                        <button className="hover:text-text-h transition-colors" title="Show less like this">
+                        <button onClick={(e) => { e.preventDefault(); toast('Hide story is coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="Show less like this">
                             <ThumbsDown size={20} strokeWidth={1.5} />
                         </button>
-                        <button className="hover:text-text-h transition-colors" title="Save">
+                        <button onClick={(e) => { e.preventDefault(); toast('Bookmarks are coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="Save">
                             <Bookmark size={20} strokeWidth={1.5} />
                         </button>
-                        <button className="hover:text-text-h transition-colors" title="More options">
+                        <button onClick={(e) => { e.preventDefault(); toast('More options coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="More options">
                             <MoreHorizontal size={20} strokeWidth={1.5} />
                         </button>
                     </div>
