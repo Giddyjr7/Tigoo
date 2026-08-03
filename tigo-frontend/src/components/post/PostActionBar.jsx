@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 
 export default function PostActionBar({ post, commentCount = 0 }) {
-    const { totalClaps, handleClap } = useClaps(post?.id, post?.clapCount || 0);
+    const { totalClaps, userClaps, handleClap } = useClaps(post?.id, post?.clapCount || 0);
     const { user } = useAuth();
     const navigate = useNavigate();
     
@@ -57,7 +57,7 @@ export default function PostActionBar({ post, commentCount = 0 }) {
         <div className="flex items-center justify-between text-text py-3 my-8 border-y border-border max-w-[800px] mx-auto w-full">
             <div className="flex items-center gap-6">
                 <button onClick={handleClap} className="flex items-center gap-2 hover:text-text-h transition-colors" title="Claps">
-                    <ThumbsUp size={22} strokeWidth={1.2} />
+                    <ThumbsUp size={22} strokeWidth={1.2} className={userClaps > 0 ? "text-text-h" : ""} fill={userClaps > 0 ? "currentColor" : "none"} />
                     <span className="text-sm">{totalClaps}</span>
                 </button>
                 <button onClick={() => toast('Comments are coming soon!', { icon: '🚧' })} className="flex items-center gap-2 hover:text-text-h transition-colors" title="Comments">
@@ -70,7 +70,7 @@ export default function PostActionBar({ post, commentCount = 0 }) {
             </div>
             <div className="flex items-center gap-5 relative">
                 <button onClick={handleSave} className="hover:text-text-h transition-colors" title="Bookmark">
-                    <Bookmark size={22} strokeWidth={1.2} className={isSaved ? "fill-text-h text-text-h" : ""} />
+                    <Bookmark size={22} strokeWidth={1.2} className={isSaved ? "text-text-h" : ""} fill={isSaved ? "currentColor" : "none"} />
                 </button>
                 <button onClick={() => toast('Audio playback is coming soon!', { icon: '🚧' })} className="hover:text-text-h transition-colors" title="Listen">
                     <PlayCircle size={22} strokeWidth={1.2} />

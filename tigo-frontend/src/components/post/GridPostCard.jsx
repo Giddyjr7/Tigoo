@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal, ThumbsDown, Edit, Trash2, Flag, EyeOff, UserX } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { useClaps } from '../../hooks/useClaps';
 import { api } from '../../lib/api';
 
 export default function GridPostCard({ post, onHide, onUnsave, onDelete }) {
     const { user } = useAuth();
+    const { totalClaps, userClaps, handleClap } = useClaps(post?.id, post?.clapCount || 0);
     const [isSaved, setIsSaved] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
@@ -99,11 +101,13 @@ export default function GridPostCard({ post, onHide, onUnsave, onDelete }) {
                 <div className="mt-auto flex items-center justify-between text-text text-sm pt-4 relative">
                     <div className="flex items-center gap-4">
                         <span>{post.readTimeMin} min read</span>
-                        <span className="flex items-center gap-1"><ThumbsUp size={16} /> {post.clapCount || 0}</span>
+                        <span onClick={(e) => { e.preventDefault(); handleClap(); }} className="flex items-center gap-1 cursor-pointer hover:text-text-h transition-colors">
+                            <ThumbsUp size={16} className={userClaps > 0 ? "text-text-h" : ""} fill={userClaps > 0 ? "currentColor" : "none"} /> {totalClaps}
+                        </span>
                         <span className="flex items-center gap-1" onClick={(e) => { e.preventDefault(); toast('Comments are coming soon!', { icon: '🚧' }); }}><MessageCircle size={16} className="cursor-pointer" /> 0</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={handleSave} className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} className={isSaved ? "fill-text-h text-text-h" : ""} /></button>
+                        <button onClick={handleSave} className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} className={isSaved ? "text-text-h" : ""} fill={isSaved ? "currentColor" : "none"} /></button>
                         <div className="relative" ref={dropdownRef}>
                             <button onClick={(e) => { e.preventDefault(); setShowDropdown(!showDropdown); }} className="hover:text-text-h transition-colors focus:outline-none" title="More"><MoreHorizontal size={20} strokeWidth={1.5} /></button>
                             {showDropdown && (

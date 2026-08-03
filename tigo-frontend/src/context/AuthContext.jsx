@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { authClient } from '../lib/auth-client';
 import { api } from '../lib/api';
@@ -45,6 +45,8 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    const [backendUser, setBackendUser] = useState(null);
+
     useEffect(() => {
         const syncUser = async () => {
             if (session?.user) {
@@ -53,12 +55,15 @@ export const AuthProvider = ({ children }) => {
                     const token = sessionResult?.data?.session?.token;
 
                     if (token) {
-                        await api.get('/api/users/me');
+                        const res = await api.get('/api/users/me');
+                        setBackendUser(res.data);
                     }
                 } catch (err) {
                     console.error('Failed to sync user to backend:', err);
                     toast.error('Failed to sync your account. Some features may not work correctly.');
                 }
+            } else {
+                setBackendUser(null);
             }
         };
         syncUser();
@@ -91,9 +96,10 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{
-            user: session?.user,
+            user: backendUser || session?.user, // Fallback to session.user to prevent complete breakage, but backendUser takes precedence
+            backendUser,
             session,
-            isLoading: isPending,
+            isLoading: isPending || (session?.user && !backendUser), // also load while backend user is fetching
             signInWithGoogle,
             signOut
         }}>

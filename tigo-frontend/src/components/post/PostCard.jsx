@@ -105,7 +105,7 @@ export default function PostCard({ post, onHide, onUnsave, onDelete }) {
                     <div className="flex items-center gap-4 sm:gap-6 text-sm text-text">
                         <div className="flex items-center gap-4">
                             <span onClick={(e) => { e.preventDefault(); handleClap(); }} className="flex items-center gap-1.5 hover:text-text-h cursor-pointer transition-colors" title="Claps">
-                                <ThumbsUp size={18} strokeWidth={1.5} />
+                                <ThumbsUp size={18} strokeWidth={1.5} className={userClaps > 0 ? "text-text-h" : ""} fill={userClaps > 0 ? "currentColor" : "none"} />
                                 <span>{totalClaps}</span>
                             </span>
                             <span onClick={() => toast('Comments are coming soon!', { icon: '🚧' })} className="flex items-center gap-1.5 hover:text-text-h cursor-pointer transition-colors" title="Comments">
@@ -122,7 +122,7 @@ export default function PostCard({ post, onHide, onUnsave, onDelete }) {
                             <ThumbsDown size={20} strokeWidth={1.5} />
                         </button>
                         <button onClick={handleSave} className="hover:text-text-h transition-colors" title="Save">
-                            <Bookmark size={20} strokeWidth={1.5} className={isSaved ? "fill-text-h text-text-h" : ""} />
+                            <Bookmark size={20} strokeWidth={1.5} className={isSaved ? "text-text-h" : ""} fill={isSaved ? "currentColor" : "none"} />
                         </button>
                         <div className="relative" ref={dropdownRef}>
                             <button onClick={(e) => { e.preventDefault(); setShowDropdown(!showDropdown); }} className="hover:text-text-h transition-colors focus:outline-none" title="More options">
