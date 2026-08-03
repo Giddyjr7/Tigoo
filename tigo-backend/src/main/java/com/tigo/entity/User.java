@@ -47,4 +47,20 @@ public class User {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
+
+    @ManyToMany
+    @JoinTable(
+        name = "saved_posts",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private List<Post> savedPosts;
+
+    @ManyToMany
+    @JoinTable(
+        name = "hidden_posts",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private List<Post> hiddenPosts;
 }

@@ -22,12 +22,14 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
            "AND (:tagSlug IS NULL OR EXISTS (SELECT t FROM p.tags t WHERE t.slug = :tagSlug)) " +
            "AND (:search IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:featured IS NULL OR p.featured = :featured) " +
+           "AND (:userId IS NULL OR p.id NOT IN (SELECT hp.id FROM User u JOIN u.hiddenPosts hp WHERE u.id = :userId)) " +
            "ORDER BY p.publishedAt DESC")
     Page<Post> findFeed(@Param("status") PostStatus status, 
                         @Param("categoryId") Integer categoryId, 
                         @Param("tagSlug") String tagSlug, 
                         @Param("search") String search, 
                         @Param("featured") Boolean featured, 
+                        @Param("userId") UUID userId,
                         Pageable pageable);
     
     Page<Post> findByAuthorIdOrderByCreatedAtDesc(UUID authorId, Pageable pageable);
@@ -35,4 +37,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     Page<Post> findByAuthorIdAndStatusOrderByPublishedAtDesc(UUID authorId, PostStatus status, Pageable pageable);
     
     int countByAuthorIdAndStatus(UUID authorId, PostStatus status);
+
+    @Query("SELECT p FROM User u JOIN u.savedPosts p WHERE u.id = :userId ORDER BY p.publishedAt DESC")
+    Page<Post> findSavedPostsByUserId(@Param("userId") UUID userId, Pageable pageable);
 }

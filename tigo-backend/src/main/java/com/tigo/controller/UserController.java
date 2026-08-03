@@ -11,6 +11,7 @@ import com.tigo.entity.PostStatus;
 import com.tigo.exception.ResourceNotFoundException;
 import com.tigo.repository.PostRepository;
 import com.tigo.repository.UserRepository;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;

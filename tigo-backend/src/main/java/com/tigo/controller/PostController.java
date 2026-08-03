@@ -37,8 +37,9 @@ public class PostController {
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) String tagSlug,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Boolean featured) {
-        return postService.getFeed(pageable, Optional.ofNullable(categoryId), Optional.ofNullable(tagSlug), Optional.ofNullable(search), Optional.ofNullable(featured));
+            @RequestParam(required = false) Boolean featured,
+            @CurrentUser User requester) {
+        return postService.getFeed(pageable, Optional.ofNullable(categoryId), Optional.ofNullable(tagSlug), Optional.ofNullable(search), Optional.ofNullable(featured), requester);
     }
 
     @GetMapping("/{slug}")
@@ -68,5 +69,32 @@ public class PostController {
             Pageable pageable,
             @CurrentUser User requester) {
         return postService.getUserPosts(userId, pageable, requester);
+    }
+
+    @PostMapping("/{id}/save")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void savePost(@PathVariable UUID id, @CurrentUser User requester) {
+        if (requester == null) throw new com.tigo.exception.UnauthorizedAccessException("User is not authenticated");
+        postService.savePost(id, requester);
+    }
+
+    @DeleteMapping("/{id}/save")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unsavePost(@PathVariable UUID id, @CurrentUser User requester) {
+        if (requester == null) throw new com.tigo.exception.UnauthorizedAccessException("User is not authenticated");
+        postService.unsavePost(id, requester);
+    }
+
+    @GetMapping("/saved")
+    public Page<PostSummaryResponse> getSavedPosts(Pageable pageable, @CurrentUser User requester) {
+        if (requester == null) throw new com.tigo.exception.UnauthorizedAccessException("User is not authenticated");
+        return postService.getSavedPosts(requester, pageable);
+    }
+
+    @PostMapping("/{id}/hide")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void hidePost(@PathVariable UUID id, @CurrentUser User requester) {
+        if (requester == null) throw new com.tigo.exception.UnauthorizedAccessException("User is not authenticated");
+        postService.hidePost(id, requester);
     }
 }

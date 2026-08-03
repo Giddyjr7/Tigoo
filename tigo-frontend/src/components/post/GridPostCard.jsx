@@ -1,8 +1,67 @@
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Bookmark, MoreHorizontal, ThumbsDown, Edit, Trash2, Flag, EyeOff, UserX } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../lib/api';
 
-export default function GridPostCard({ post }) {
+export default function GridPostCard({ post, onHide, onUnsave, onDelete }) {
+    const { user } = useAuth();
+    const [isSaved, setIsSaved] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const isOwner = user && post?.author?.id === user.id;
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleHide = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post(`/api/posts/${post.id}/hide`);
+            if (onHide) onHide();
+            toast.success('Post hidden');
+        } catch (err) {
+            toast.error('Failed to hide post');
+        }
+    };
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        try {
+            if (isSaved) {
+                await api.delete(`/api/posts/${post.id}/save`);
+                setIsSaved(false);
+                if (onUnsave) onUnsave();
+                toast.success('Removed from saved list');
+            } else {
+                await api.post(`/api/posts/${post.id}/save`);
+                setIsSaved(true);
+                toast.success('Saved to library');
+            }
+        } catch (err) {
+            toast.error('Failed to update save status');
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await api.delete(`/api/posts/${post.id}`);
+            if (onDelete) onDelete();
+            toast.success('Post deleted');
+        } catch (err) {
+            toast.error('Failed to delete post');
+        }
+    };
+
     if (!post) return null;
     
     return (
@@ -37,15 +96,43 @@ export default function GridPostCard({ post }) {
                     </h3>
                 </Link>
 
-                <div className="mt-auto flex items-center justify-between text-text text-sm pt-4">
+                <div className="mt-auto flex items-center justify-between text-text text-sm pt-4 relative">
                     <div className="flex items-center gap-4">
                         <span>{post.readTimeMin} min read</span>
                         <span className="flex items-center gap-1"><ThumbsUp size={16} /> {post.clapCount || 0}</span>
                         <span className="flex items-center gap-1" onClick={(e) => { e.preventDefault(); toast('Comments are coming soon!', { icon: '🚧' }); }}><MessageCircle size={16} className="cursor-pointer" /> 0</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={(e) => { e.preventDefault(); toast('Bookmarks are coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} /></button>
-                        <button onClick={(e) => { e.preventDefault(); toast('More options coming soon!', { icon: '🚧' }); }} className="hover:text-text-h transition-colors" title="More"><MoreHorizontal size={20} strokeWidth={1.5} /></button>
+                        <button onClick={handleSave} className="hover:text-text-h transition-colors" title="Bookmark"><Bookmark size={20} strokeWidth={1.5} className={isSaved ? "fill-text-h text-text-h" : ""} /></button>
+                        <div className="relative" ref={dropdownRef}>
+                            <button onClick={(e) => { e.preventDefault(); setShowDropdown(!showDropdown); }} className="hover:text-text-h transition-colors focus:outline-none" title="More"><MoreHorizontal size={20} strokeWidth={1.5} /></button>
+                            {showDropdown && (
+                                <div className="absolute right-0 bottom-full mb-2 w-48 bg-white border border-border rounded-md shadow-lg py-1 z-10 flex flex-col overflow-hidden text-sm">
+                                    {isOwner ? (
+                                        <>
+                                            <button onClick={(e) => { e.preventDefault(); toast('Edit coming soon!'); setShowDropdown(false); }} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left w-full">
+                                                <Edit size={16} /> Edit Post
+                                            </button>
+                                            <button onClick={(e) => { e.preventDefault(); handleDelete(); setShowDropdown(false); }} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left w-full text-red-600">
+                                                <Trash2 size={16} /> Delete Post
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={(e) => { e.preventDefault(); toast('Reported!'); setShowDropdown(false); }} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left w-full">
+                                                <Flag size={16} /> Report Post
+                                            </button>
+                                            <button onClick={(e) => { e.preventDefault(); handleHide(e); setShowDropdown(false); }} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left w-full">
+                                                <EyeOff size={16} /> Not Interested
+                                            </button>
+                                            <button onClick={(e) => { e.preventDefault(); toast('Author muted!'); setShowDropdown(false); }} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-left w-full text-red-600">
+                                                <UserX size={16} /> Mute Author
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

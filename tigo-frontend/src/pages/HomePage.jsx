@@ -16,12 +16,22 @@ export default function HomePage() {
     const [hasMore, setHasMore] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const shuffleArray = (array) => {
+        const newArr = [...array];
+        for (let i = newArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        return newArr;
+    };
+
     const fetchPosts = async (pageNum, tab, append = false) => {
         setIsLoading(true);
         try {
             const queryParam = tab === 'featured' ? '?featured=true&' : '?';
             const res = await api.get(`/api/posts${queryParam}page=${pageNum}&size=10`);
-            const fetchedPosts = res.data.content;
+            // Apply Fisher-Yates shuffle to randomize feed content
+            const fetchedPosts = shuffleArray(res.data.content);
             setPosts(prev => append ? [...prev, ...fetchedPosts] : fetchedPosts);
             setHasMore(!res.data.last);
         } catch (error) {
@@ -30,6 +40,10 @@ export default function HomePage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleRemovePost = (postId) => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
     };
 
     useEffect(() => {

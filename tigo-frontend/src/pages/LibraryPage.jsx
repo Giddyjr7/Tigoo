@@ -11,7 +11,7 @@ export default function LibraryPage() {
 
     const tabs = [
         { name: 'Your lists', path: '/library' },
-        { name: 'Saved lists', path: '/library/saved' },
+        { name: 'Saved posts', path: '/library/saved' },
         { name: 'Highlights', path: '/library/highlights' },
         { name: 'Reading history', path: '/library/history' },
         { name: 'Responses', path: '/library/responses' },
