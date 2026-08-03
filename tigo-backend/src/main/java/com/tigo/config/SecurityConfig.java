@@ -5,12 +5,15 @@ import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
@@ -29,10 +32,15 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
 
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwkSetUri;
+
+    @Value("${app.auth.issuer-uri:}")
+    private String configuredIssuerUri;
 
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
@@ -122,14 +130,25 @@ public class SecurityConfig {
 
             NimbusJwtDecoder decoder = new NimbusJwtDecoder(customProcessor);
 
-            // Neon Auth's JWKS URI follows the standard OIDC discovery convention
-            // (issuer + "/.well-known/jwks.json"), so the issuer is derived from it
-            // rather than duplicated as a separate hardcoded property. Combined with
-            // the default validator (exp/nbf), this rejects tokens minted by any
-            // other issuer that happens to share this JWKS endpoint.
-            String issuer = jwkSetUri.replace("/.well-known/jwks.json", "");
-            OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefaultWithIssuer(issuer);
-            decoder.setJwtValidator(validator);
+            // Issuer is sourced from app.auth.issuer-uri (env: AUTH_ISSUER_URI) when set.
+            // Otherwise it's derived from the JWKS URI on the assumption that Neon Auth
+            // follows the standard OIDC discovery convention (issuer + "/.well-known/jwks.json").
+            // Set AUTH_ISSUER_URI explicitly if the real "iss" claim in issued tokens
+            // doesn't match that derived value.
+            String issuer = (configuredIssuerUri != null && !configuredIssuerUri.isBlank())
+                ? configuredIssuerUri
+                : jwkSetUri.replace("/.well-known/jwks.json", "");
+
+            OAuth2TokenValidator<Jwt> defaultValidator = JwtValidators.createDefaultWithIssuer(issuer);
+            OAuth2TokenValidator<Jwt> loggingValidator = token -> {
+                OAuth2TokenValidatorResult result = defaultValidator.validate(token);
+                if (result.hasErrors()) {
+                    log.warn("JWT validation failed. expectedIssuer=[{}] actualIssuerClaim=[{}] errors={}",
+                        issuer, token.getIssuer(), result.getErrors());
+                }
+                return result;
+            };
+            decoder.setJwtValidator(loggingValidator);
 
             return decoder;
         } catch (Exception e) {
